@@ -1,8 +1,8 @@
 [workspace]
 members = ["math", "datasets", "model",
-    "chapter02",
-    "chapter03",
-    "chapter04"
+    "chapters/chapter02",
+    "chapters/chapter03",
+    "chapters/chapter04"
 ]
 
 [profile.release]
