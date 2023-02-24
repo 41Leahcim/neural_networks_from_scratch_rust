@@ -2,8 +2,8 @@
 
 use std::{ops::Sub, time::Instant};
 
-use model::layer::{dense::Dense, Layer};
 use math::operations::{self, add, dot};
+use model::layer::{dense::Dense, Layer};
 
 const PRINT_PERFORMANCE: bool = false;
 const PRINT_OUTPUT: bool = true;

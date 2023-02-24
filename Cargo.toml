@@ -2,7 +2,8 @@
 members = ["math", "datasets", "model",
     "chapters/chapter02",
     "chapters/chapter03",
-    "chapters/chapter04"
+    "chapters/chapter04",
+    "chapters/chapter05"
 ]
 
 [profile.release]

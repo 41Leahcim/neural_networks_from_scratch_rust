@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-use rayon::prelude::{IntoParallelRefIterator, IndexedParallelIterator, ParallelIterator};
+use rayon::prelude::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 
 #[must_use]
 pub fn vectors(left: &[f64], right: &[f64]) -> Vec<f64> {
