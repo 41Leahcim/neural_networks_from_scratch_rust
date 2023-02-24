@@ -1,0 +1,10 @@
+[workspace]
+members = ["numpy", "datasets", "layers",
+    "chapter02",
+    "chapter03",
+    "chapter04"
+]
+
+[profile.release]
+lto = true
+opt-level = 'z'
