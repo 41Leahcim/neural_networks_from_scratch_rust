@@ -1,4 +1,4 @@
-use numpy::operations::{add, dot};
+use math::operations::{add, dot};
 
 use crate::Layer;
 
@@ -33,7 +33,7 @@ impl Layer for Dense {
 impl Dense {
     #[must_use]
     pub fn new(number_inputs: usize, number_neurons: usize) -> Self {
-        let weights = numpy::randn_matrix(number_inputs, number_neurons);
+        let weights = math::randn_matrix(number_inputs, number_neurons);
         let biases = vec![0.0; number_neurons];
 
         Self {

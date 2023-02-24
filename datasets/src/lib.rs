@@ -2,7 +2,7 @@
 
 use std::f64::consts::PI;
 
-use numpy::linspace;
+use math::linspace;
 
 /// Creates a sinewave dataset of a specified size
 ///

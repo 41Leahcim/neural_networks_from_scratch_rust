@@ -1,5 +1,5 @@
 [workspace]
-members = ["numpy", "datasets", "layers",
+members = ["math", "datasets", "layers",
     "chapter02",
     "chapter03",
     "chapter04"

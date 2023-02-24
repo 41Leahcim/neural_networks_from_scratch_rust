@@ -2,7 +2,7 @@
 
 use std::ops::Sub;
 
-use numpy::operations::{self, add, dot};
+use math::operations::{self, add, dot};
 
 fn a_single_neuron() {
     // Set the inputs, weights, and bias

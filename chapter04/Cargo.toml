@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 layers = {path = "../layers"}
 datasets = {path = "../datasets" }
-numpy = {path = "../numpy" }
+math = {path = "../math" }

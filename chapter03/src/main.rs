@@ -3,7 +3,7 @@
 use std::{ops::Sub, time::Instant};
 
 use layers::{dense::Dense, Layer};
-use numpy::operations::{self, add, dot};
+use math::operations::{self, add, dot};
 
 const PRINT_PERFORMANCE: bool = false;
 const PRINT_OUTPUT: bool = true;

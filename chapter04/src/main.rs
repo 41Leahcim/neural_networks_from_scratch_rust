@@ -69,7 +69,6 @@ fn softmax_test() {
     if PRINT_PERFORMANCE {
         println!("Softmax test: {}", start.elapsed().as_secs_f64());
     }
-    loop{}
 }
 
 fn main() {
