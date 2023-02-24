@@ -1,6 +1,6 @@
 use math::operations::{add, dot};
 
-use crate::Layer;
+use crate::layer::Layer;
 
 #[derive(Debug, Clone)]
 pub struct Dense {

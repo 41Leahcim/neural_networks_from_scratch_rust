@@ -1,6 +1,6 @@
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
-use crate::Layer;
+use crate::layer::Layer;
 
 #[derive(Debug, Clone, Default)]
 pub struct ReLU {

@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 math = { path = "../math" }
 datasets = { path = "../datasets" }
-layers = { path = "../layers" }
+model = { path = "../model" }
 rand = "0.8"

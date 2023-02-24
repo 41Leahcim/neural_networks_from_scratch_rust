@@ -1,5 +1,3 @@
-#![warn(clippy::pedantic, clippy::nursery)]
-
 pub mod activation;
 pub mod dense;
 

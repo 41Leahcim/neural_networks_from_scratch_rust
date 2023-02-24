@@ -2,9 +2,10 @@
 
 use std::time::Instant;
 
-use layers::activation::relu::ReLU;
-use layers::activation::softmax::Softmax;
-use layers::{dense::Dense, Layer};
+use model::layer::{
+    activation::{relu::ReLU, softmax::Softmax},
+    dense::Dense, Layer
+};
 
 const PRINT_PERFORMANCE: bool = true;
 const PRINT_OUTPUT: bool = false;

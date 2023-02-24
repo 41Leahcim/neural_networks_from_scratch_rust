@@ -2,7 +2,7 @@
 
 use std::{ops::Sub, time::Instant};
 
-use layers::{dense::Dense, Layer};
+use model::layer::{dense::Dense, Layer};
 use math::operations::{self, add, dot};
 
 const PRINT_PERFORMANCE: bool = false;

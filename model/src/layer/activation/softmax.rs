@@ -1,4 +1,4 @@
-use crate::Layer;
+use crate::layer::Layer;
 
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
