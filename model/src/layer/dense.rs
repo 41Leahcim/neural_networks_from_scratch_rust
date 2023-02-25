@@ -1,4 +1,7 @@
+use std::ops::AddAssign;
+
 use math::operations::{add, dot};
+use rayon::prelude::{IntoParallelRefMutIterator, ParallelIterator, IndexedParallelIterator};
 
 use crate::layer::Layer;
 
@@ -27,6 +30,29 @@ impl Layer for Dense {
     /// A constant reference to the data.
     fn get_outputs(&self) -> &[Vec<f64>] {
         &self.outputs
+    }
+
+    /// Adds a value to every weight
+    fn add_matrix_to_weights(&mut self, matrix: &[Vec<f64>]){
+        // Make sure the number of rows in the weights is equal to the number of rows in the matrix
+        assert_eq!(self.weights.len(), matrix.len());
+        self.weights.par_iter_mut().zip(matrix).for_each(|(weight_row, row)|{
+            // Make sure the number of values in the weight row is equal to the number of values in the matrix row
+            assert_eq!(weight_row.len(), row.len());
+
+            // Multiply the values in the weight row with the values in the matrix row
+            weight_row.iter_mut().zip(row).for_each(|(weight, value)| weight.add_assign(value));
+        });
+    }
+
+    /// This function is not applicable for this funtion, as it doesn't have biases
+    fn add_vector_to_biases(&mut self, vector: &[f64]){
+        self.biases.iter_mut().zip(vector).for_each(|(bias, value)| bias.add_assign(value));
+    }
+
+    /// Returns the shape of the neural network
+    fn shape(&self) -> (usize, usize){
+        (self.weights.len(), self.biases.len())
     }
 }
 

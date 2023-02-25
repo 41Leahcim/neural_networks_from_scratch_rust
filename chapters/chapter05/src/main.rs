@@ -36,6 +36,7 @@ fn categorical_crossentropy_test() {
         layers[i].forward(&previous_outputs);
     });
 
+    // Create a loss function, and calculate loss
     let loss_function = CategoricalCrossentropy::default();
     let loss = loss_function.calculate(layers.last().unwrap().get_outputs(), &y);
 

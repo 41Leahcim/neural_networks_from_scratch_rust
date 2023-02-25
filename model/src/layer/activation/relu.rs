@@ -28,4 +28,16 @@ impl Layer for ReLU {
     fn get_outputs(&self) -> &[Vec<f64>] {
         &self.outputs
     }
+
+    /// This function is not applicable for this funtion, as it doesn't have weights.
+    fn add_matrix_to_weights(&mut self, _: &[Vec<f64>]) {
+    }
+
+    /// This function is not applicable for this function, as it doesn't have biases.
+    fn add_vector_to_biases(&mut self, _: &[f64]){}
+
+    /// Returns the shape of the neural network
+    fn shape(&self) -> (usize, usize){
+        (0, 0)
+    }
 }
