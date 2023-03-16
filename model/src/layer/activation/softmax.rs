@@ -1,6 +1,6 @@
 use crate::layer::Layer;
 
-use ndarray::{Array2, Axis, Array1};
+use ndarray::{Array2, Axis};
 
 #[derive(Debug, Clone, Default)]
 pub struct Softmax {
@@ -42,12 +42,6 @@ impl Layer for Softmax {
     fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
-
-    /// This function is not applicable for this funtion, as it doesn't have weights
-    fn add_matrix_to_weights(&mut self, _: &Array2<f64>) {}
-
-    /// This function is not applicable for this funtion, as it doesn't have biases
-    fn add_vector_to_biases(&mut self, _: &Array1<f64>) {}
 
     /// Returns the shape of the weights
     fn weights_shape(&self) -> [usize;2]{

@@ -1,4 +1,4 @@
-use std::ops::{AddAssign, Add};
+use std::ops::Add;
 
 use ndarray::{Array2, Array1, Array};
 use rand::Rng;
@@ -30,17 +30,6 @@ impl Layer for Dense {
     /// A constant reference to the data.
     fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
-    }
-
-    /// Adds a value to every weight
-    fn add_matrix_to_weights(&mut self, matrix: &Array2<f64>) {
-        // Make sure the number of rows in the weights is equal to the number of rows in the matrix
-        self.weights.add_assign(matrix);
-    }
-
-    /// This function is not applicable for this funtion, as it doesn't have biases
-    fn add_vector_to_biases(&mut self, vector: &Array1<f64>) {
-        self.biases.add_assign(vector);
     }
 
     /// Returns the shape of the weights

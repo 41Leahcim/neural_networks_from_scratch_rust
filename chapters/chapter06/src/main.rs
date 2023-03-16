@@ -1,4 +1,4 @@
-use std::time::Instant;
+//use std::time::Instant;
 
 use model::{
     accuracy,
@@ -9,16 +9,15 @@ use model::{
     },
     loss::{categorical_crossentropy::CategoricalCrossentropy, Loss},
 };
-use ndarray::Array2;
 
-const PRINT_OUTPUT: bool = false;
+//const PRINT_OUTPUT: bool = false;
 const PRINT_LOSS: bool = true;
 const PRINT_ACCURACY: bool = true;
-const PRINT_PERFORMANCE: bool = true;
+//const PRINT_PERFORMANCE: bool = true;
 
 fn categorical_crossentropy_test() {
     // Start measuring performance
-    let start = Instant::now();
+    //let start = Instant::now();
 
     // Create the data
     let (x, y) = datasets::spiral(100, 3);
@@ -36,7 +35,8 @@ fn categorical_crossentropy_test() {
     let mut best_loss = f64::MAX;
     let mut best_layers = vec![];
 
-    for i in 0..100_000 {
+    let mut i: i128 = 0;
+    loop {
         // pass the input data in order through the layer
         layers[0].forward(&x);
         (1..layers.len()).for_each(|i| {
@@ -70,14 +70,13 @@ fn categorical_crossentropy_test() {
         }
 
         // Change the weights for the next iteration
-        const LEARNING_RATE: f64 = 0.05;
         layers.iter_mut().step_by(2).for_each(|layer| {
-            let matrix = Array2::from_shape_fn(layer.weights_shape(), |_| rand::random::<f64>() * 2.0 * LEARNING_RATE - 1.0);
-            layer.add_matrix_to_weights(&matrix);
+            *layer = Box::new(Dense::new(layer.weights_shape()[0], layer.weights_shape()[1]));
         });
+        i += 1;
     }
 
-    // Print the first few results, if needed
+    /*// Print the first few results, if needed
     if PRINT_OUTPUT {
         println!("{:?}", &layers.last().unwrap().get_outputs());
     }
@@ -85,7 +84,7 @@ fn categorical_crossentropy_test() {
     // Print the performance, if needed
     if PRINT_PERFORMANCE {
         println!("Run-time: {}", start.elapsed().as_secs_f64());
-    }
+    }*/
 }
 
 fn main() {
