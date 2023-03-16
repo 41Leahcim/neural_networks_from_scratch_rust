@@ -1,10 +1,10 @@
 use crate::layer::Layer;
 
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
+use ndarray::{Array2, Axis, Array1};
 
 #[derive(Debug, Clone, Default)]
 pub struct Softmax {
-    outputs: Vec<Vec<f64>>,
+    outputs: Array2<f64>,
 }
 
 impl Layer for Softmax {
@@ -13,20 +13,25 @@ impl Layer for Softmax {
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    fn forward(&mut self, inputs: &[Vec<f64>]) {
-        self.outputs = inputs
-            .par_iter()
+    fn forward(&mut self, inputs: &Array2<f64>) {
+        let output_vec = inputs
+            .axis_iter(Axis(0))
             .map(|row| {
-                let mut max = f64::NEG_INFINITY;
-                row.iter().for_each(|value| max = value.max(max));
-                let row = row
-                    .iter()
-                    .map(|value| (*value - max).exp())
-                    .collect::<Vec<f64>>();
-                let sum: f64 = row.iter().sum();
-                row.iter().map(|value| *value / sum).collect()
+                let max = row.fold(f64::NEG_INFINITY, |acc, &value| value.max(acc));
+                let row_exp = row.map(|&value| (value - max).exp());
+                let sum: f64 = row_exp.sum();
+                (row_exp / sum).to_owned()
             })
-            .collect();
+            .collect::<Vec<_>>();
+        
+        let num_rows = output_vec.len();
+        let num_cols = output_vec[0].len();
+        self.outputs = Array2::zeros((num_rows, num_cols));
+
+        output_vec.iter().enumerate().for_each(|(i, row)|{
+            self.outputs.row_mut(i).assign(row);
+        });
+
     }
 
     /// Returns a constant reference to the data.
@@ -34,18 +39,23 @@ impl Layer for Softmax {
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &[Vec<f64>] {
+    fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 
     /// This function is not applicable for this funtion, as it doesn't have weights
-    fn add_matrix_to_weights(&mut self, _: &[Vec<f64>]){}
+    fn add_matrix_to_weights(&mut self, _: &Array2<f64>) {}
 
     /// This function is not applicable for this funtion, as it doesn't have biases
-    fn add_vector_to_biases(&mut self, _: &[f64]){}
+    fn add_vector_to_biases(&mut self, _: &Array1<f64>) {}
 
-    /// Returns the shape of the neural network
-    fn shape(&self) -> (usize, usize){
-        (0, 0)
+    /// Returns the shape of the weights
+    fn weights_shape(&self) -> [usize;2]{
+        [0, 0]
+    }
+    
+    /// Returns the shape of the biases
+    fn biases_shape(&self) -> usize {
+        0
     }
 }

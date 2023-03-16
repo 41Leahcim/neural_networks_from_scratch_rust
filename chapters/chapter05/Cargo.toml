@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 datasets = {path = "../../datasets"}
 model = {path = "../../model"}
+ndarray = "0.15.6"

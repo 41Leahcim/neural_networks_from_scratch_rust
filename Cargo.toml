@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "math", "datasets", "model",
+    "datasets", "model",
     "chapters/chapter02",
     "chapters/chapter03",
     "chapters/chapter04",

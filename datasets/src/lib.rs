@@ -1,8 +1,9 @@
 #![warn(clippy::pedantic, clippy::nursery)]
 
-use std::f64::consts::PI;
+use std::ops::{Add, Mul};
 
-use math::linspace;
+use ndarray::{Array, Array2, s};
+use rand::Rng;
 
 /// Creates a sinewave dataset of a specified size
 ///
@@ -13,19 +14,11 @@ use math::linspace;
 /// A matrix containing samples, and a matrix containing the labels
 #[must_use]
 #[allow(clippy::cast_precision_loss)]
-pub fn sine(samples: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
-    let x = (0..samples)
-        .map(|i| vec![i as f64 / samples as f64])
-        .collect::<Vec<Vec<f64>>>();
-    let y = x
-        .iter()
-        .map(|array| {
-            array
-                .iter()
-                .map(|&value| (value * 2.0 * PI).sin())
-                .collect()
-        })
-        .collect();
+pub fn sine(samples: usize) -> (Array2<f64>, Array2<f64>) {
+    let x = Array::linspace(0.0, 1.0, samples).insert_axis(ndarray::Axis(1));
+    let y = Array::from_shape_fn((1, samples), |(_, j)|{
+        (2.0 * std::f64::consts::PI * x[[j, 0]]).sin()
+    }).reversed_axes();
 
     (x, y)
 }
@@ -40,26 +33,22 @@ pub fn sine(samples: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
 /// A matrix containing samples, and a matrix containing labels
 #[must_use]
 #[allow(clippy::cast_precision_loss)]
-pub fn vertical(samples: usize, classes: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
-    // create the outer samples vector
-    let mut x = Vec::with_capacity(samples * classes);
+pub fn vertical(samples: usize, classes: usize) -> (Array2<f64>, Array2<f64>) {
+    let mut x = Array2::<f64>::zeros((samples * classes, 2));
+    let mut y = Array2::<f64>::zeros((samples * classes, 1));
 
-    // create the outer labels vector
-    let mut y = Vec::with_capacity(samples * classes);
-
-    // create the data, per class first
-    (0..classes).for_each(|class| {
-        // create the samples and set the current class of the current line
-        (0..samples).for_each(|_| {
-            // Generate the data
-            x.push(vec![
-                (rand::random::<f64>() % (samples as f64)).mul_add(0.1, class as f64 / 3.0),
-                (rand::random::<f64>() % (samples as f64)).mul_add(0.1, 0.5),
-            ]);
-
-            // Set the label
-            y.push(vec![class as f64]);
-        });
+    (0..classes).for_each(|class_number|{
+        let ix = samples * class_number..samples * class_number.add(1);
+        x.slice_mut(s![ix.clone(), ..]).assign(&Array::from_shape_fn((samples, 2), |(_, j)|{
+            let class_f = class_number as f64;
+            let mut rng = rand::thread_rng();
+            match j{
+                0 => rng.gen::<f64>().mul_add(0.1, class_f / 3.0),
+                1 => rng.gen::<f64>().mul_add(0.1, 0.5),
+                _ => unreachable!()
+            }
+        }));
+        y.slice_mut(s![ix, ..]).fill(class_number as f64);
     });
 
     // return the data samples and labels
@@ -76,33 +65,19 @@ pub fn vertical(samples: usize, classes: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>
 /// A matrix containing data for a number of spirals
 #[must_use]
 #[allow(clippy::cast_precision_loss)]
-pub fn spiral(samples: usize, classes: usize) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
-    // create the outer samples vector
-    let mut x = Vec::with_capacity(samples * classes);
+pub fn spiral(samples: usize, classes: usize) -> (Array2<f64>, Array2<f64>) {
+    let mut x = Array::zeros((samples * classes, 2));
+    let mut y = Array::zeros((samples * classes, 1));
 
-    // create the outer labels vector
-    let mut y = Vec::with_capacity(samples * classes);
-
-    // create the data
-    (0..classes).for_each(|class| {
-        // create two arrays of linear data
-        let r = linspace(0.0, 1.0, samples);
-        let mut t = linspace(class as f64 * 4.0, (class as f64 + 1.0) * 4.0, samples);
-
-        // generate the data for the current class
-        (0..samples).for_each(|sample| {
-            // add a random value to the current t-value
-            t[sample] += rand::random::<f64>() * 0.2;
-
-            // generate the samples
-            x.push(vec![
-                r[sample] * (t[sample] * 2.5).sin(),
-                r[sample] * (t[sample] * 2.5).cos(),
-            ]);
-
-            // set the label
-            y.push(vec![class as f64]);
-        });
+    (0..classes).for_each(|class_number|{
+        let ix= samples * class_number..samples * (class_number + 1);
+        let r = Array::linspace(0.0, 1.0, samples);
+        let t = Array::linspace((class_number * 4) as f64, class_number.add(1).mul(4) as f64, samples) + Array::<f64, _>::zeros(samples).mapv(|_| rand::random::<f64>() * 0.2);
+        let x_coords = r.clone() * &(t.clone() * 2.5).mapv(f64::sin);
+        let y_coords = r * &(t * 2.5).mapv(f64::cos);
+        x.slice_mut(s![ix.clone(), 0]).assign(&x_coords);
+        x.slice_mut(s![ix.clone(), 1]).assign(&y_coords);
+        y.slice_mut(s![ix, 0]).fill(class_number as f64);
     });
 
     // return the result

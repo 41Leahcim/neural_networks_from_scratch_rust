@@ -9,6 +9,7 @@ use model::{
     },
     loss::{categorical_crossentropy::CategoricalCrossentropy, Loss},
 };
+use ndarray::Array2;
 
 const PRINT_OUTPUT: bool = false;
 const PRINT_LOSS: bool = true;
@@ -35,7 +36,7 @@ fn categorical_crossentropy_test() {
     let mut best_loss = f64::MAX;
     let mut best_layers = vec![];
 
-    for i in 0..100_000{
+    for i in 0..100_000 {
         // pass the input data in order through the layer
         layers[0].forward(&x);
         (1..layers.len()).for_each(|i| {
@@ -46,10 +47,11 @@ fn categorical_crossentropy_test() {
         // Create a loss function, and calculate loss
         let loss = loss_function.calculate(layers.last().unwrap().get_outputs(), &y);
 
-        if loss < best_loss{
+        if loss < best_loss {
             println!("Generation: {i}");
             best_loss = loss;
             best_layers = layers.to_vec();
+
             // Print the loss, if needed
             if PRINT_LOSS {
                 println!("Loss: {}", loss);
@@ -63,17 +65,14 @@ fn categorical_crossentropy_test() {
                 );
             }
             println!();
-        }else{
+        } else {
             layers = best_layers.to_vec();
         }
 
         // Change the weights for the next iteration
         const LEARNING_RATE: f64 = 0.05;
-        layers.iter_mut().step_by(2).for_each(|layer|{
-            let (y, x) = layer.shape();
-            let matrix = (0..y).map(|_|{
-                (0..x).map(|_| rand::random::<f64>() * 2.0 * LEARNING_RATE - 1.0).collect()
-            }).collect::<Vec<Vec<f64>>>();
+        layers.iter_mut().step_by(2).for_each(|layer| {
+            let matrix = Array2::from_shape_fn(layer.weights_shape(), |_| rand::random::<f64>() * 2.0 * LEARNING_RATE - 1.0);
             layer.add_matrix_to_weights(&matrix);
         });
     }

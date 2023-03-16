@@ -7,6 +7,7 @@ use model::layer::{
     dense::Dense,
     Layer,
 };
+use ndarray::s;
 
 const PRINT_PERFORMANCE: bool = true;
 const PRINT_OUTPUT: bool = false;
@@ -16,7 +17,7 @@ fn relu_test() {
     let start = Instant::now();
 
     // Create the data
-    let (x, _) = datasets::spiral(100, 3);
+    let (x, _) = datasets::spiral(4_000_000, 3);
 
     // Create a layer
     let mut dense1 = Dense::new(2, 3);
@@ -32,7 +33,7 @@ fn relu_test() {
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{:?}", &activation.get_outputs()[..5]);
+        println!("{}", &activation.get_outputs().slice(s![..5, ..]));
     }
 
     // Print the performance, if needed
@@ -46,12 +47,12 @@ fn softmax_test() {
     let start = Instant::now();
 
     // Create the data
-    let (x, _) = datasets::spiral(100, 3);
+    let (x, _) = datasets::spiral(2_000_000, 3);
 
     let mut layers: Vec<Box<dyn Layer>> = vec![
-        Box::new(Dense::new(2, 1 << 19)), // Create a dense layer as input layer
+        Box::new(Dense::new(2, 3)), // Create a dense layer as input layer
         Box::<ReLU>::default(),           // Create a rectified Linear Activation funtion
-        Box::new(Dense::new(1 << 19, 3)), // Create a dense layer as output layer
+        Box::new(Dense::new(3, 3)), // Create a dense layer as output layer
         Box::<Softmax>::default(),        // Create a Softmax Activation function
     ];
 
@@ -64,7 +65,7 @@ fn softmax_test() {
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{:?}", &layers.last().unwrap().get_outputs()[..5]);
+        println!("{}", &layers.last().unwrap().get_outputs().slice(s![..5, ..]));
     }
 
     // Print the performance, if needed

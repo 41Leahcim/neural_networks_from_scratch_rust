@@ -1,13 +1,13 @@
 #![warn(clippy::pedantic, clippy::nursery)]
 
-use std::ops::Sub;
+use std::ops::{Sub, Add};
 
-use math::operations::{self, add, dot};
+use ndarray::{array, Array1};
 
 fn a_single_neuron() {
     // Set the inputs, weights, and bias
-    let inputs = vec![1.0, 2.0, 3.0];
-    let weights = vec![0.2, 0.8, -0.5];
+    let inputs = [1.0, 2.0, 3.0];
+    let weights = [0.2, 0.8, -0.5];
     let bias = 2.0;
 
     // Calculate the output
@@ -25,8 +25,8 @@ fn a_single_neuron() {
 
 fn a_larger_neuron() {
     // Set the inputs, weights, and bias
-    let inputs = vec![1.0, 2.0, 3.0, 2.5];
-    let weights = vec![0.2, 0.8, -0.5, 1.0];
+    let inputs = [1.0, 2.0, 3.0, 2.5];
+    let weights = [0.2, 0.8, -0.5, 1.0];
     let bias = 2.0;
 
     // Calculate the output
@@ -44,13 +44,13 @@ fn a_larger_neuron() {
 
 fn a_layer_of_neurons() {
     // Initialize the inputs, weights, and biases
-    let inputs = vec![1.0, 2.0, 3.0, 2.5];
-    let weights = vec![
+    let inputs = [1.0, 2.0, 3.0, 2.5];
+    let weights = [
         [0.2, 0.8, -0.5, 1.0],
         [0.5, -0.91, 0.26, -0.5],
         [-0.26, -0.27, 0.17, 0.87],
     ];
-    let biases = vec![2.0, 3.0, 0.5];
+    let biases = [2.0, 3.0, 0.5];
 
     // Calculate the outputs
     let output: Vec<f64> = weights
@@ -73,12 +73,12 @@ fn a_layer_of_neurons() {
 
 fn a_single_neuron_numpy() {
     // Initialize the inputs, weights, and bias
-    let inputs = vec![1.0, 2.0, 3.0, 2.5];
-    let weights = vec![0.2, 0.8, -0.5, 1.0];
+    let inputs = array![1.0, 2.0, 3.0, 2.5];
+    let weights = array![0.2, 0.8, -0.5, 1.0];
     let bias = 2.0;
 
     // Calculate the output
-    let output = dot::vectors(&inputs, &weights) + bias;
+    let output = inputs.dot::<Array1<f64>>(&weights).add(bias);
 
     // Print the result
     println!("{output}");
@@ -87,56 +87,50 @@ fn a_single_neuron_numpy() {
 
 fn a_layer_of_neurons_numpy() {
     // Initialize the inputs, weights, and biases
-    let inputs = vec![1.0, 2.0, 3.0, 2.5];
-    let weights = vec![
-        vec![0.2, 0.8, -0.5, 1.0],
-        vec![0.5, -0.91, 0.26, -0.5],
-        vec![-0.26, -0.27, 0.17, 0.87],
+    let inputs = array![1.0, 2.0, 3.0, 2.5];
+    let weights = array![
+        [0.2, 0.8, -0.5, 1.0],
+        [0.5, -0.91, 0.26, -0.5],
+        [-0.26, -0.27, 0.17, 0.87],
     ];
-    let biases = vec![2.0, 3.0, 0.5];
+    let biases = array![2.0, 3.0, 0.5];
 
     // Calculate the outputs
-    let output = add::vectors(&dot::matrix_vector(&weights, &inputs), &biases);
+    let output = weights.dot::<Array1<f64>>(&inputs).add(biases);
 
     // Print and check the result
-    println!("{output:?}");
-    assert_eq!(output, vec![4.8, 1.21, 2.385]);
+    println!("{output}");
+    assert_eq!(output, array![4.8, 1.21, 2.385]);
 }
 
 fn a_layer_of_neurons_and_batch_of_data_numpy() {
     // Initialize the inputs, weights, and biases
-    let inputs = vec![
-        vec![1.0, 2.0, 3.0, 2.5],
-        vec![2.0, 5.0, -1.0, 2.0],
-        vec![-1.5, 2.7, 3.3, -0.8],
+    let inputs = array![
+        [1.0, 2.0, 3.0, 2.5],
+        [2.0, 5.0, -1.0, 2.0],
+        [-1.5, 2.7, 3.3, -0.8],
     ];
-    let weights = vec![
-        vec![0.2, 0.8, -0.5, 1.0],
-        vec![0.5, -0.91, 0.26, -0.5],
-        vec![-0.26, -0.27, 0.17, 0.87],
+    let weights = array![
+        [0.2, 0.8, -0.5, 1.0],
+        [0.5, -0.91, 0.26, -0.5],
+        [-0.26, -0.27, 0.17, 0.87],
     ];
-    let biases = vec![2.0, 3.0, 0.5];
+    let biases = array![2.0, 3.0, 0.5];
 
     // Calculate the outputs
-    let output = add::matrix_vector(
-        &dot::matrix(&inputs, &operations::t(&weights)),
-        &biases,
-        false,
-    );
+    let output = inputs.dot(&weights.t()).add(&biases);
 
     // Print and check the outputs
-    println!("{output:?}");
-    vec![
-        vec![4.8, 1.21, 2.385],
-        vec![8.9, -1.81, 0.2],
-        vec![1.41, 1.051, 0.026],
+    println!("{output}");
+    output.iter().zip(
+        array![
+        [4.8, 1.21, 2.385],
+        [8.9, -1.81, 0.2],
+        [1.41, 1.051, 0.026],
     ]
-    .iter()
-    .zip(output)
-    .for_each(|(expected, actual)| {
-        expected.iter().zip(actual).for_each(|(expected, actual)| {
-            assert!(expected.sub(actual).abs().le(&1e-15));
-        });
+    ).for_each(|(output, expected)|{
+        let difference: f64 = output.sub(expected);
+        assert!(difference.abs() <= 0.000_000_000_000_001);
     });
 }
 

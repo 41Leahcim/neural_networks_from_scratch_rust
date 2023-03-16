@@ -1,10 +1,10 @@
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
+use ndarray::{Array2, Array1};
 
 use crate::layer::Layer;
 
 #[derive(Debug, Clone, Default)]
 pub struct ReLU {
-    outputs: Vec<Vec<f64>>,
+    outputs: Array2<f64>,
 }
 
 impl Layer for ReLU {
@@ -13,11 +13,8 @@ impl Layer for ReLU {
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    fn forward(&mut self, inputs: &[Vec<f64>]) {
-        self.outputs = inputs
-            .par_iter()
-            .map(|vector| vector.iter().map(|value| value.max(0.0)).collect())
-            .collect();
+    fn forward(&mut self, inputs: &Array2<f64>) {
+        self.outputs = inputs.mapv(|value| value.max(0.0));
     }
 
     /// Returns a constant reference to the data.
@@ -25,19 +22,23 @@ impl Layer for ReLU {
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &[Vec<f64>] {
+    fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 
     /// This function is not applicable for this funtion, as it doesn't have weights.
-    fn add_matrix_to_weights(&mut self, _: &[Vec<f64>]) {
-    }
+    fn add_matrix_to_weights(&mut self, _: &Array2<f64>) {}
 
     /// This function is not applicable for this function, as it doesn't have biases.
-    fn add_vector_to_biases(&mut self, _: &[f64]){}
+    fn add_vector_to_biases(&mut self, _: &Array1<f64>) {}
 
-    /// Returns the shape of the neural network
-    fn shape(&self) -> (usize, usize){
-        (0, 0)
+    /// Returns the shape of the weights
+    fn weights_shape(&self) -> [usize;2]{
+        [0, 0]
+    }
+    
+    /// Returns the shape of the biases
+    fn biases_shape(&self) -> usize {
+        0
     }
 }

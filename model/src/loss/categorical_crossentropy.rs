@@ -1,6 +1,6 @@
 use std::ops::Mul;
 
-use rayon::prelude::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
+use ndarray::{Array2, Array1};
 
 use super::Loss;
 
@@ -8,19 +8,13 @@ use super::Loss;
 pub struct CategoricalCrossentropy {}
 
 impl Loss for CategoricalCrossentropy {
-    fn forward(&self, predictions: &[Vec<f64>], actual: &[Vec<f64>]) -> Vec<f64> {
-        // Make sure the matrices have the same size
-        assert_eq!(predictions.len(), actual.len());
-
+    fn forward(&self, predictions: &Array2<f64>, actual: &Array2<f64>) -> Array1<f64> {
         // Clip data to prevent division by 0
         predictions
-            .par_iter()
-            .map(|row| {
-                row.iter()
-                    .map(|value| value.clamp(1e-7, 1.0 - 1e-7))
-                    .collect::<Vec<f64>>()
+            .mapv(|value| {
+                value.clamp(1e-7, 1.0 - 1e-7)
             })
-            .zip(actual)
+            .axis_iter(ndarray::Axis(0)).zip(actual.axis_iter(ndarray::Axis(0)))
             .map(|(predicted, actual)| {
                 // Calculate loss (negative log of sum of the accuracies)
                 -if actual.len() == 1 {
@@ -29,9 +23,6 @@ impl Loss for CategoricalCrossentropy {
                     let actual = actual[0] as usize;
                     predicted[actual]
                 } else {
-                    // Make sure the vectors have the same size
-                    assert_eq!(predicted.len(), actual.len());
-
                     // Sum the accuracies
                     predicted
                         .iter()
@@ -44,6 +35,6 @@ impl Loss for CategoricalCrossentropy {
                 }
                 .ln()
             })
-            .collect::<Vec<f64>>()
+            .collect::<Array1<f64>>()
     }
 }

@@ -1,15 +1,15 @@
-use std::ops::AddAssign;
+use std::ops::{AddAssign, Add};
 
-use math::operations::{add, dot};
-use rayon::prelude::{IntoParallelRefMutIterator, ParallelIterator, IndexedParallelIterator};
+use ndarray::{Array2, Array1, Array};
+use rand::Rng;
 
 use crate::layer::Layer;
 
 #[derive(Debug, Clone)]
 pub struct Dense {
-    weights: Vec<Vec<f64>>,
-    biases: Vec<f64>,
-    outputs: Vec<Vec<f64>>,
+    weights: Array2<f64>,
+    biases: Array1<f64>,
+    outputs: Array2<f64>,
 }
 
 impl Layer for Dense {
@@ -19,8 +19,8 @@ impl Layer for Dense {
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    fn forward(&mut self, inputs: &[Vec<f64>]) {
-        self.outputs = add::matrix_vector(&dot::matrix(inputs, &self.weights), &self.biases, false);
+    fn forward(&mut self, inputs: &Array2<f64>) {
+        self.outputs = inputs.dot(&self.weights).add(&self.biases);
     }
 
     /// Returns a constant reference to the data.
@@ -28,44 +28,43 @@ impl Layer for Dense {
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &[Vec<f64>] {
+    fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 
     /// Adds a value to every weight
-    fn add_matrix_to_weights(&mut self, matrix: &[Vec<f64>]){
+    fn add_matrix_to_weights(&mut self, matrix: &Array2<f64>) {
         // Make sure the number of rows in the weights is equal to the number of rows in the matrix
-        assert_eq!(self.weights.len(), matrix.len());
-        self.weights.par_iter_mut().zip(matrix).for_each(|(weight_row, row)|{
-            // Make sure the number of values in the weight row is equal to the number of values in the matrix row
-            assert_eq!(weight_row.len(), row.len());
-
-            // Multiply the values in the weight row with the values in the matrix row
-            weight_row.iter_mut().zip(row).for_each(|(weight, value)| weight.add_assign(value));
-        });
+        self.weights.add_assign(matrix);
     }
 
     /// This function is not applicable for this funtion, as it doesn't have biases
-    fn add_vector_to_biases(&mut self, vector: &[f64]){
-        self.biases.iter_mut().zip(vector).for_each(|(bias, value)| bias.add_assign(value));
+    fn add_vector_to_biases(&mut self, vector: &Array1<f64>) {
+        self.biases.add_assign(vector);
     }
 
-    /// Returns the shape of the neural network
-    fn shape(&self) -> (usize, usize){
-        (self.weights.len(), self.biases.len())
+    /// Returns the shape of the weights
+    fn weights_shape(&self) -> [usize;2]{
+        [self.weights.shape()[0], self.weights.shape()[1]]
+    }
+    
+    /// Returns the shape of the biases
+    fn biases_shape(&self) -> usize {
+        self.biases.shape()[0]
     }
 }
 
 impl Dense {
     #[must_use]
     pub fn new(number_inputs: usize, number_neurons: usize) -> Self {
-        let weights = math::randn_matrix(number_inputs, number_neurons);
-        let biases = vec![0.0; number_neurons];
+        let mut rng = rand::thread_rng();
+        let weights = Array::from_shape_fn((number_inputs, number_neurons), |_| rng.gen_range(-1.0..=1.0));
+        let biases = Array1::zeros(number_neurons);
 
         Self {
             weights,
             biases,
-            outputs: vec![vec![]],
+            outputs: Array2::zeros((0, 0)),
         }
     }
 }

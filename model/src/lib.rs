@@ -9,30 +9,33 @@
 
 use std::ops::Div;
 
+use ndarray::Array2;
+
 pub mod layer;
 pub mod loss;
 
 #[must_use]
-pub fn accuracy(predictions: &[Vec<f64>], actual: &[Vec<f64>]) -> f64 {
-    // Make sure the prediction and actual value have the same outer size
-    assert_eq!(predictions.len(), actual.len());
-    let accuracies = predictions
-        .iter()
-        .zip(actual)
+pub fn accuracy(predictions: &Array2<f64>, actual: &Array2<f64>) -> f64 {
+    // Get the number of samples
+    let samples = predictions.shape()[0];
+
+    predictions
+        .axis_iter(ndarray::Axis(0))
+        .zip(actual.axis_iter(ndarray::Axis(0)))
         .map(|(prediction, actual)| {
             if actual.len() == 1 {
                 // If the expected value, is just one value
                 // That value is the label, thus the prediction for that label is the accuracy
                 prediction[actual[0] as usize]
             } else {
-                // Make sure the inner-size is the same, if the expected value has more than one value
+                // Make sure the vectors have the same size
                 assert_eq!(prediction.len(), actual.len());
 
                 // Calculate the maximum, that is the main label
                 let mut max = actual[0];
                 let mut max_index = 0;
                 actual.iter().enumerate().skip(1).for_each(|(i, value)| {
-                    if max.le(value) {
+                    if value.gt(&max) {
                         max = *value;
                         max_index = i;
                     }
@@ -42,8 +45,5 @@ pub fn accuracy(predictions: &[Vec<f64>], actual: &[Vec<f64>]) -> f64 {
                 prediction[max_index]
             }
         })
-        .collect::<Vec<f64>>();
-
-    // Return the average accuracy
-    accuracies.iter().sum::<f64>().div(accuracies.len() as f64)
+        .sum::<f64>().div(samples as f64)
 }

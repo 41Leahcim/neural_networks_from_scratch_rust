@@ -1,11 +1,13 @@
 use std::ops::Div;
 
+use ndarray::{Array2, Array1};
+
 pub mod categorical_crossentropy;
 
 pub trait Loss {
-    fn forward(&self, predictions: &[Vec<f64>], actual: &[Vec<f64>]) -> Vec<f64>;
+    fn forward(&self, predictions: &Array2<f64>, actual: &Array2<f64>) -> Array1<f64>;
 
-    fn calculate(&self, output: &[Vec<f64>], y: &[Vec<f64>]) -> f64 {
+    fn calculate(&self, output: &Array2<f64>, y: &Array2<f64>) -> f64 {
         // Calculate samples losses with the selected Loss function
         let sample_losses = self.forward(output, y);
 

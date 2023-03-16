@@ -22,7 +22,7 @@ fn categorical_crossentropy_test() {
     // Create the data
     let (x, y) = datasets::spiral(1000000, 3);
 
-    let mut layers: Vec<Box<dyn Layer>> = vec![
+    let mut layers: [Box<dyn Layer>;4] = [
         Box::new(Dense::new(2, 3)), // Create a dense layer as input layer
         Box::<ReLU>::default(),     // Create a rectified Linear Activation funtion
         Box::new(Dense::new(3, 3)), // Create a dense layer as output layer

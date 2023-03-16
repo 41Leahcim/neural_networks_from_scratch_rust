@@ -10,3 +10,4 @@ datasets = {path = "../../datasets"}
 model = {path = "../../model"}
 rand = "0.8"
 dyn-clone = "1"
+ndarray = "0.15.6"
