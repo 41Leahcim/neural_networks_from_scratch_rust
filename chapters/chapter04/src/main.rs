@@ -49,11 +49,11 @@ fn softmax_test() {
     // Create the data
     let (x, _) = datasets::spiral(2_000_000, 3);
 
-    let mut layers: Vec<Box<dyn Layer>> = vec![
-        Box::new(Dense::new(2, 3)), // Create a dense layer as input layer
-        Box::<ReLU>::default(),           // Create a rectified Linear Activation funtion
-        Box::new(Dense::new(3, 3)), // Create a dense layer as output layer
-        Box::<Softmax>::default(),        // Create a Softmax Activation function
+    let mut layers: Vec<Layer> = vec![
+        Layer::Dense(Dense::new(2, 3)), // Create a dense layer as input layer
+        Layer::ReLU(ReLU::default()),           // Create a rectified Linear Activation funtion
+        Layer::Dense(Dense::new(3, 3)), // Create a dense layer as output layer
+        Layer::Softmax(Softmax::default()),        // Create a Softmax Activation function
     ];
 
     // pass the input data in order through the layer

@@ -1,19 +1,17 @@
 use ndarray::Array2;
 
-use crate::layer::Layer;
-
 #[derive(Debug, Clone, Default)]
 pub struct ReLU {
     outputs: Array2<f64>,
 }
 
-impl Layer for ReLU {
+impl ReLU {
     /// Passes data through the layer, setting negative value to 0.
     /// Result is stored in the layer and retrieved with the ```get_outputs``` function.
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    fn forward(&mut self, inputs: &Array2<f64>) {
+    pub fn forward(&mut self, inputs: &Array2<f64>) {
         self.outputs = inputs.mapv(|value| value.max(0.0));
     }
 
@@ -22,17 +20,8 @@ impl Layer for ReLU {
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &Array2<f64> {
+    #[must_use]
+    pub const  fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
-    }
-
-    /// Returns the shape of the weights
-    fn weights_shape(&self) -> [usize;2]{
-        [0, 0]
-    }
-    
-    /// Returns the shape of the biases
-    fn biases_shape(&self) -> usize {
-        0
     }
 }
