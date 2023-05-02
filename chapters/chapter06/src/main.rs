@@ -25,11 +25,11 @@ fn categorical_crossentropy_test() {
     let (x, y) = datasets::spiral(100, 3);
 
     // Create layers
-    let mut layers: Vec<Box<dyn Layer>> = vec![
-        Box::new(Dense::new(2, 3)), // Create a dense layer as input layer
-        Box::<ReLU>::default(),     // Create a rectified Linear Activation funtion
-        Box::new(Dense::new(3, 3)), // Create a dense layer as output layer
-        Box::<Softmax>::default(),  // Create a Softmax Activation function
+    let mut layers: Vec<Layer> = vec![
+        Layer::Dense(Dense::new(2, 3)), // Create a dense layer as input layer
+        Layer::ReLU(ReLU::default()),     // Create a rectified Linear Activation funtion
+        Layer::Dense(Dense::new(3, 3)), // Create a dense layer as output layer
+        Layer::Softmax(Softmax::default())  // Create a Softmax Activation function
     ];
 
     let loss_function = CategoricalCrossentropy::default();
@@ -74,7 +74,12 @@ fn categorical_crossentropy_test() {
 
         // Change the weights for the next iteration
         layers.iter_mut().step_by(2).for_each(|layer| {
-            *layer = Box::new(Dense::new(layer.weights_shape()[0], layer.weights_shape()[1]));
+            match layer {
+                Layer::Dense(layer) => {
+                    *layer = Dense::new(layer.weights_shape()[0], layer.weights_shape()[1]);
+                },
+                _ => {}
+            }
         });
         i += 1;
     }

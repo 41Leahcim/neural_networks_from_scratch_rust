@@ -2,7 +2,7 @@
 
 use std::{ops::{Sub, Add}, time::Instant};
 
-use model::layer::{dense::Dense, Layer};
+use model::layer::{dense::Dense};
 use ndarray::{array, s};
 
 const PRINT_PERFORMANCE: bool = true;
