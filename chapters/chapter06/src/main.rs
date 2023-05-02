@@ -1,5 +1,7 @@
 //use std::time::Instant;
 
+use std::time::{Instant, Duration};
+
 use model::{
     accuracy,
     layer::{
@@ -36,7 +38,8 @@ fn categorical_crossentropy_test() {
     let mut best_layers = vec![];
 
     let mut i: i128 = 0;
-    loop {
+    let start = Instant::now();
+    while start.elapsed() < Duration::from_secs(1) {
         // pass the input data in order through the layer
         layers[0].forward(&x);
         (1..layers.len()).for_each(|i| {
