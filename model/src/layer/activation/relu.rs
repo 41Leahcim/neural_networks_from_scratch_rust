@@ -1,17 +1,19 @@
 use ndarray::Array2;
 
+use super::Activation;
+
 #[derive(Debug, Clone, Default)]
 pub struct ReLU {
     outputs: Array2<f64>,
 }
 
-impl ReLU {
+impl Activation for ReLU {
     /// Passes data through the layer, setting negative value to 0.
     /// Result is stored in the layer and retrieved with the ```get_outputs``` function.
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    pub fn forward(&mut self, inputs: &Array2<f64>) {
+    fn forward(&mut self, inputs: &Array2<f64>) {
         self.outputs = inputs.mapv(|value| value.max(0.0));
     }
 
@@ -20,8 +22,7 @@ impl ReLU {
     ///
     /// # Returns
     /// A constant reference to the data.
-    #[must_use]
-    pub const  fn get_outputs(&self) -> &Array2<f64> {
+    fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 }

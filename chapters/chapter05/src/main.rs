@@ -1,4 +1,7 @@
-use std::time::Instant;
+use std::{
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 
 use model::{
     accuracy,
@@ -22,11 +25,9 @@ fn categorical_crossentropy_test() {
     // Create the data
     let (x, y) = datasets::spiral(1000000, 3);
 
-    let mut layers: [Layer;4] = [
-        Layer::Dense(Dense::new(2, 3)), // Create a dense layer as input layer
-        Layer::ReLU(ReLU::default()),     // Create a rectified Linear Activation funtion
-        Layer::Dense(Dense::new(3, 3)), // Create a dense layer as output layer
-        Layer::Softmax(Softmax::default()),  // Create a Softmax Activation function
+    let mut layers: [Dense; 2] = [
+        Dense::new(2, 3, Some(Arc::new(Mutex::new(ReLU::default())))), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::new(3, 3, Some(Arc::new(Mutex::new(Softmax::default())))), // Create a dense layer as output layer with a a Softmax Activation function
     ];
 
     // pass the input data in order through the layer

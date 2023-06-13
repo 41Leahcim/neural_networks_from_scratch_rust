@@ -1,6 +1,9 @@
 //use std::time::Instant;
 
-use std::time::{Instant, Duration};
+use std::{
+    sync::{Arc, Mutex},
+    time::{Duration, Instant},
+};
 
 use model::{
     accuracy,
@@ -25,11 +28,9 @@ fn categorical_crossentropy_test() {
     let (x, y) = datasets::spiral(100, 3);
 
     // Create layers
-    let mut layers: Vec<Layer> = vec![
-        Layer::Dense(Dense::new(2, 3)), // Create a dense layer as input layer
-        Layer::ReLU(ReLU::default()),     // Create a rectified Linear Activation funtion
-        Layer::Dense(Dense::new(3, 3)), // Create a dense layer as output layer
-        Layer::Softmax(Softmax::default())  // Create a Softmax Activation function
+    let mut layers = vec![
+        Dense::new(2, 3, Some(Arc::new(Mutex::new(ReLU::default())))), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::new(3, 3, Some(Arc::new(Mutex::new(Softmax::default())))), // Create a dense layer as output layer
     ];
 
     let loss_function = CategoricalCrossentropy::default();
@@ -42,9 +43,10 @@ fn categorical_crossentropy_test() {
     while start.elapsed() < Duration::from_secs(1) {
         // pass the input data in order through the layer
         layers[0].forward(&x);
+        let mut previous_outputs = layers[0].get_outputs().to_owned();
         (1..layers.len()).for_each(|i| {
-            let previous_outputs = layers[i - 1].get_outputs().to_owned();
             layers[i].forward(&previous_outputs);
+            previous_outputs = layers[i].get_outputs().to_owned();
         });
 
         // Create a loss function, and calculate loss
@@ -74,12 +76,9 @@ fn categorical_crossentropy_test() {
 
         // Change the weights for the next iteration
         layers.iter_mut().step_by(2).for_each(|layer| {
-            match layer {
-                Layer::Dense(layer) => {
-                    *layer = Dense::new(layer.weights_shape()[0], layer.weights_shape()[1]);
-                },
-                _ => {}
-            }
+            let shape = layer.weights_shape().to_owned();
+            let activation = layer.activation();
+            *layer = Dense::new(shape[0], shape[1], activation)
         });
         i += 1;
     }

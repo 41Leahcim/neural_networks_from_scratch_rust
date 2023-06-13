@@ -1,17 +1,19 @@
 use ndarray::{Array2, Axis};
 
+use super::Activation;
+
 #[derive(Debug, Clone, Default)]
 pub struct Softmax {
     outputs: Array2<f64>,
 }
 
-impl Softmax {
+impl Activation for Softmax {
     /// Passes data through the layer, the values will be on a curve between 0 and 1.
     /// Result is stored in the layer and retrieved with the ```get_outputs``` function.
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    pub fn forward(&mut self, inputs: &Array2<f64>) {
+    fn forward(&mut self, inputs: &Array2<f64>) {
         let output_vec = inputs
             .axis_iter(Axis(0))
             .map(|row| {
@@ -21,15 +23,14 @@ impl Softmax {
                 (row_exp / sum).to_owned()
             })
             .collect::<Vec<_>>();
-        
+
         let num_rows = output_vec.len();
         let num_cols = output_vec[0].len();
         self.outputs = Array2::zeros((num_rows, num_cols));
 
-        output_vec.iter().enumerate().for_each(|(i, row)|{
+        output_vec.iter().enumerate().for_each(|(i, row)| {
             self.outputs.row_mut(i).assign(row);
         });
-
     }
 
     /// Returns a constant reference to the data.
@@ -38,7 +39,7 @@ impl Softmax {
     /// # Returns
     /// A constant reference to the data.
     #[must_use]
-    pub const fn get_outputs(&self) -> &Array2<f64> {
+    fn get_outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 }

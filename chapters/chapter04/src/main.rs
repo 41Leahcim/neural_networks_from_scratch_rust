@@ -1,9 +1,12 @@
 #![warn(clippy::pedantic, clippy::nursery)]
 
-use std::time::Instant;
+use std::{
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 
 use model::layer::{
-    activation::{relu::ReLU, softmax::Softmax},
+    activation::{relu::ReLU, softmax::Softmax, Activation},
     dense::Dense,
     Layer,
 };
@@ -20,7 +23,7 @@ fn relu_test() {
     let (x, _) = datasets::spiral(4_000_000, 3);
 
     // Create a layer
-    let mut dense1 = Dense::new(2, 3);
+    let mut dense1 = Dense::new(2, 3, None);
 
     // Create a ReLU (rectified linear) activation function
     let mut activation = ReLU::default();
@@ -49,11 +52,9 @@ fn softmax_test() {
     // Create the data
     let (x, _) = datasets::spiral(2_000_000, 3);
 
-    let mut layers: Vec<Layer> = vec![
-        Layer::Dense(Dense::new(2, 3)), // Create a dense layer as input layer
-        Layer::ReLU(ReLU::default()),           // Create a rectified Linear Activation funtion
-        Layer::Dense(Dense::new(3, 3)), // Create a dense layer as output layer
-        Layer::Softmax(Softmax::default()),        // Create a Softmax Activation function
+    let mut layers = vec![
+        Dense::new(2, 3, Some(Arc::new(Mutex::new(ReLU::default())))), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::new(3, 3, Some(Arc::new(Mutex::new(Softmax::default())))), // Create a dense layer as output layer
     ];
 
     // pass the input data in order through the layer
@@ -65,7 +66,10 @@ fn softmax_test() {
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{}", &layers.last().unwrap().get_outputs().slice(s![..5, ..]));
+        println!(
+            "{}",
+            &layers.last().unwrap().get_outputs().slice(s![..5, ..])
+        );
     }
 
     // Print the performance, if needed
