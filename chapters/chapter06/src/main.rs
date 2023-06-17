@@ -26,8 +26,8 @@ fn categorical_crossentropy_test() {
 
     // Create layers
     let mut layers = (
-        Dense::new(2, 3, ReLU::default()), // Create a dense layer as input layer with a rectified Linear Activation funtion
-        Dense::new(3, 3, Softmax::default()), // Create a dense layer as output layer
+        Dense::<2, 3, ReLU>::default(), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::<3, 3, Softmax>::default(), // Create a dense layer as output layer
     );
 
     let loss_function = CategoricalCrossentropy::default();
@@ -65,11 +65,9 @@ fn categorical_crossentropy_test() {
         }
 
         // Change the weights for the next iteration
-        let layer0_shape = layers.0.weights_shape();
-        let layer1_shape = layers.1.weights_shape();
         layers = (
-            Dense::new(layer0_shape[0], layer0_shape[1], layers.0.activation()),
-            Dense::new(layer1_shape[0], layer1_shape[1], layers.1.activation()),
+            Dense::<2, 3, _>::new(layers.0.activation()),
+            Dense::<3, 3, _>::new(layers.1.activation()),
         );
         i += 1;
     }

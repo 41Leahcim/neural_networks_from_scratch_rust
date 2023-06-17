@@ -20,7 +20,7 @@ fn relu_test() {
     let (x, _) = datasets::spiral(4_000_000, 3);
 
     // Create a layer
-    let mut dense1 = Dense::new(2, 3, Linear::default());
+    let mut dense1 = Dense::<2, 3, Linear>::default();
 
     // Create a ReLU (rectified linear) activation function
     let mut activation = ReLU::default();
@@ -50,8 +50,8 @@ fn softmax_test() {
     let (x, _) = datasets::spiral(1_000_000, 3);
 
     let mut layers = (
-        Dense::new(2, 3, ReLU::default()), // Create a dense layer as input layer with a rectified Linear Activation funtion
-        Dense::new(3, 3, Softmax::default()), // Create a dense layer as output layer
+        Dense::<2, 3, ReLU>::default(), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::<3, 3, Softmax>::default(), // Create a dense layer as output layer
     );
 
     // pass the input data in order through the layer

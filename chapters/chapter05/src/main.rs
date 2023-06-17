@@ -23,8 +23,8 @@ fn categorical_crossentropy_test() {
     let (x, y) = datasets::spiral(1000000, 3);
 
     let mut layers = (
-        Dense::new(2, 3, ReLU::default()), // Create a dense layer as input layer with a rectified Linear Activation funtion
-        Dense::new(3, 3, Softmax::default()), // Create a dense layer as output layer with a a Softmax Activation function
+        Dense::<2, 3, ReLU>::default(), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::<3, 3, Softmax>::default(), // Create a dense layer as output layer with a a Softmax Activation function
     );
 
     // pass the input data in order through the layer

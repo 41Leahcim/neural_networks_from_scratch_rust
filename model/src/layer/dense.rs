@@ -6,14 +6,16 @@ use rand::Rng;
 use super::{activation::Activation, Layer};
 
 #[derive(Debug, Clone)]
-pub struct Dense<T: Activation> {
+pub struct Dense<const IN: usize, const OUT: usize, T: Activation> {
     weights: Array2<f64>,
     biases: Array1<f64>,
     outputs: Array2<f64>,
     activation: T,
 }
 
-impl<T: Activation + Clone> Layer<T> for Dense<T> {
+impl<ActFunc: Activation + Clone, const IN: usize, const OUT: usize> Layer<ActFunc>
+    for Dense<IN, OUT, ActFunc>
+{
     /// Passes data through the layer, the values will be multiplied by the weights.
     /// The biases will be added to the result of those multiplications.
     /// Result is stored in the layer and retrieved with the ```get_outputs``` function.
@@ -45,19 +47,25 @@ impl<T: Activation + Clone> Layer<T> for Dense<T> {
         self.biases.shape()
     }
 
-    fn activation(&self) -> T {
+    fn activation(&self) -> ActFunc {
         self.activation.clone()
     }
 }
 
-impl<T: Activation> Dense<T> {
+impl<T: Activation + Clone + Default, const IN: usize, const OUT: usize> Default
+    for Dense<IN, OUT, T>
+{
+    fn default() -> Self {
+        Self::new(T::default())
+    }
+}
+
+impl<ActFunc: Activation, const IN: usize, const OUT: usize> Dense<IN, OUT, ActFunc> {
     #[must_use]
-    pub fn new(number_inputs: usize, number_neurons: usize, activation: T) -> Self {
+    pub fn new(activation: ActFunc) -> Self {
         let mut rng = rand::thread_rng();
-        let weights = Array::from_shape_fn((number_inputs, number_neurons), |_| {
-            rng.gen_range(-1.0..=1.0)
-        });
-        let biases = Array1::zeros(number_neurons);
+        let weights = Array::from_shape_fn((IN, OUT), |_| rng.gen_range(-1.0..=1.0));
+        let biases = Array1::zeros(OUT);
 
         Self {
             weights,

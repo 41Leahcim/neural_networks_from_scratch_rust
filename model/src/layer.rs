@@ -7,7 +7,7 @@ use ndarray::Array2;
 
 use self::activation::Activation;
 
-pub trait Layer<T: Activation>: Debug {
+pub trait Layer<ActFunc: Activation>: Debug {
     /// Forward input through the layer, and stores the outputs
     fn forward(&mut self, inputs: &Array2<f64>);
 
@@ -21,5 +21,5 @@ pub trait Layer<T: Activation>: Debug {
     fn biases_shape(&self) -> &[usize];
 
     // Return activation layer
-    fn activation(&self) -> T;
+    fn activation(&self) -> ActFunc;
 }
