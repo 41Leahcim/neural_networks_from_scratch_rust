@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use ndarray::Array2;
 
+pub mod linear;
 pub mod relu;
 pub mod softmax;
 

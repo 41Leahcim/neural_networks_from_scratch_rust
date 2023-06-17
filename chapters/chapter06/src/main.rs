@@ -1,9 +1,6 @@
 //use std::time::Instant;
 
-use std::{
-    sync::{Arc, Mutex},
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 use model::{
     accuracy,
@@ -28,34 +25,30 @@ fn categorical_crossentropy_test() {
     let (x, y) = datasets::spiral(100, 3);
 
     // Create layers
-    let mut layers = vec![
-        Dense::new(2, 3, Some(Arc::new(Mutex::new(ReLU::default())))), // Create a dense layer as input layer with a rectified Linear Activation funtion
-        Dense::new(3, 3, Some(Arc::new(Mutex::new(Softmax::default())))), // Create a dense layer as output layer
-    ];
+    let mut layers = (
+        Dense::new(2, 3, ReLU::default()), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::new(3, 3, Softmax::default()), // Create a dense layer as output layer
+    );
 
     let loss_function = CategoricalCrossentropy::default();
 
     let mut best_loss = f64::MAX;
-    let mut best_layers = vec![];
+    let mut best_layers = layers.clone();
 
     let mut i: i128 = 0;
     let start = Instant::now();
     while start.elapsed() < Duration::from_secs(1) {
         // pass the input data in order through the layer
-        layers[0].forward(&x);
-        let mut previous_outputs = layers[0].get_outputs().to_owned();
-        (1..layers.len()).for_each(|i| {
-            layers[i].forward(&previous_outputs);
-            previous_outputs = layers[i].get_outputs().to_owned();
-        });
+        layers.0.forward(&x);
+        layers.1.forward(layers.0.get_outputs());
 
         // Create a loss function, and calculate loss
-        let loss = loss_function.calculate(layers.last().unwrap().get_outputs(), &y);
+        let loss = loss_function.calculate(layers.1.get_outputs(), &y);
 
         if loss < best_loss {
             println!("Generation: {i}");
             best_loss = loss;
-            best_layers = layers.to_vec();
+            best_layers = layers.clone();
 
             // Print the loss, if needed
             if PRINT_LOSS {
@@ -64,22 +57,20 @@ fn categorical_crossentropy_test() {
 
             // Calculate and print the loss, if needed
             if PRINT_ACCURACY {
-                println!(
-                    "Accuracy: {}",
-                    accuracy(layers.last().unwrap().get_outputs(), &y)
-                );
+                println!("Accuracy: {}", accuracy(layers.1.get_outputs(), &y));
             }
             println!();
         } else {
-            layers = best_layers.to_vec();
+            layers = best_layers.clone();
         }
 
         // Change the weights for the next iteration
-        layers.iter_mut().step_by(2).for_each(|layer| {
-            let shape = layer.weights_shape().to_owned();
-            let activation = layer.activation();
-            *layer = Dense::new(shape[0], shape[1], activation)
-        });
+        let layer0_shape = layers.0.weights_shape();
+        let layer1_shape = layers.1.weights_shape();
+        layers = (
+            Dense::new(layer0_shape[0], layer0_shape[1], layers.0.activation()),
+            Dense::new(layer1_shape[0], layer1_shape[1], layers.1.activation()),
+        );
         i += 1;
     }
 

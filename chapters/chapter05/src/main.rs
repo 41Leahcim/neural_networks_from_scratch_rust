@@ -1,7 +1,4 @@
-use std::{
-    sync::{Arc, Mutex},
-    time::Instant,
-};
+use std::time::Instant;
 
 use model::{
     accuracy,
@@ -25,25 +22,22 @@ fn categorical_crossentropy_test() {
     // Create the data
     let (x, y) = datasets::spiral(1000000, 3);
 
-    let mut layers: [Dense; 2] = [
-        Dense::new(2, 3, Some(Arc::new(Mutex::new(ReLU::default())))), // Create a dense layer as input layer with a rectified Linear Activation funtion
-        Dense::new(3, 3, Some(Arc::new(Mutex::new(Softmax::default())))), // Create a dense layer as output layer with a a Softmax Activation function
-    ];
+    let mut layers = (
+        Dense::new(2, 3, ReLU::default()), // Create a dense layer as input layer with a rectified Linear Activation funtion
+        Dense::new(3, 3, Softmax::default()), // Create a dense layer as output layer with a a Softmax Activation function
+    );
 
     // pass the input data in order through the layer
-    layers[0].forward(&x);
-    (1..layers.len()).for_each(|i| {
-        let previous_outputs = layers[i - 1].get_outputs().to_owned();
-        layers[i].forward(&previous_outputs);
-    });
+    layers.0.forward(&x);
+    layers.1.forward(layers.0.get_outputs());
 
     // Create a loss function, and calculate loss
     let loss_function = CategoricalCrossentropy::default();
-    let loss = loss_function.calculate(layers.last().unwrap().get_outputs(), &y);
+    let loss = loss_function.calculate(layers.1.get_outputs(), &y);
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{:?}", &layers.last().unwrap().get_outputs());
+        println!("{:?}", &layers.1.get_outputs());
     }
 
     // Print the loss, if needed
@@ -53,10 +47,7 @@ fn categorical_crossentropy_test() {
 
     // Calculate and print the loss, if needed
     if PRINT_ACCURACY {
-        println!(
-            "Accuracy: {}",
-            accuracy(layers.last().unwrap().get_outputs(), &y)
-        );
+        println!("Accuracy: {}", accuracy(layers.1.get_outputs(), &y));
     }
 
     // Print the performance, if needed

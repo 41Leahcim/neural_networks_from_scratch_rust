@@ -1,16 +1,13 @@
 pub mod activation;
 pub mod dense;
 
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use ndarray::Array2;
 
 use self::activation::Activation;
 
-pub trait Layer: Debug {
+pub trait Layer<T: Activation>: Debug {
     /// Forward input through the layer, and stores the outputs
     fn forward(&mut self, inputs: &Array2<f64>);
 
@@ -24,5 +21,5 @@ pub trait Layer: Debug {
     fn biases_shape(&self) -> &[usize];
 
     // Return activation layer
-    fn activation(&self) -> Option<Arc<Mutex<dyn Activation>>>;
+    fn activation(&self) -> T;
 }

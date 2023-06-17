@@ -1,7 +1,4 @@
-use std::{
-    ops::Add,
-    sync::{Arc, Mutex},
-};
+use std::ops::Add;
 
 use ndarray::{Array, Array1, Array2};
 use rand::Rng;
@@ -9,14 +6,14 @@ use rand::Rng;
 use super::{activation::Activation, Layer};
 
 #[derive(Debug, Clone)]
-pub struct Dense {
+pub struct Dense<T: Activation> {
     weights: Array2<f64>,
     biases: Array1<f64>,
     outputs: Array2<f64>,
-    activation: Option<Arc<Mutex<dyn Activation>>>,
+    activation: T,
 }
 
-impl Layer for Dense {
+impl<T: Activation + Clone> Layer<T> for Dense<T> {
     /// Passes data through the layer, the values will be multiplied by the weights.
     /// The biases will be added to the result of those multiplications.
     /// Result is stored in the layer and retrieved with the ```get_outputs``` function.
@@ -25,11 +22,8 @@ impl Layer for Dense {
     /// ```inputs```: The inputs to process, output from the previous layer
     fn forward(&mut self, inputs: &Array2<f64>) {
         self.outputs = inputs.dot(&self.weights).add(&self.biases);
-        if let Some(activation) = self.activation.as_ref() {
-            let mut activation = activation.lock().unwrap();
-            activation.forward(&self.outputs);
-            self.outputs = activation.get_outputs().clone();
-        }
+        self.activation.forward(&self.outputs);
+        self.outputs = self.activation.get_outputs().clone();
     }
 
     /// Returns a constant reference to the data.
@@ -51,18 +45,14 @@ impl Layer for Dense {
         self.biases.shape()
     }
 
-    fn activation(&self) -> Option<Arc<Mutex<dyn Activation>>> {
+    fn activation(&self) -> T {
         self.activation.clone()
     }
 }
 
-impl Dense {
+impl<T: Activation> Dense<T> {
     #[must_use]
-    pub fn new(
-        number_inputs: usize,
-        number_neurons: usize,
-        activation: Option<Arc<Mutex<dyn Activation>>>,
-    ) -> Self {
+    pub fn new(number_inputs: usize, number_neurons: usize, activation: T) -> Self {
         let mut rng = rand::thread_rng();
         let weights = Array::from_shape_fn((number_inputs, number_neurons), |_| {
             rng.gen_range(-1.0..=1.0)
