@@ -1,5 +1,3 @@
-//use std::time::Instant;
-
 use std::time::{Duration, Instant};
 
 use model::{
@@ -12,10 +10,8 @@ use model::{
     loss::{categorical_crossentropy::CategoricalCrossentropy, Loss},
 };
 
-//const PRINT_OUTPUT: bool = false;
 const PRINT_LOSS: bool = true;
 const PRINT_ACCURACY: bool = true;
-//const PRINT_PERFORMANCE: bool = true;
 
 fn categorical_crossentropy_test() {
     // Start measuring performance
@@ -71,16 +67,6 @@ fn categorical_crossentropy_test() {
         );
         i += 1;
     }
-
-    /*// Print the first few results, if needed
-    if PRINT_OUTPUT {
-        println!("{:?}", &layers.last().unwrap().get_outputs());
-    }
-
-    // Print the performance, if needed
-    if PRINT_PERFORMANCE {
-        println!("Run-time: {}", start.elapsed().as_secs_f64());
-    }*/
 }
 
 fn main() {
