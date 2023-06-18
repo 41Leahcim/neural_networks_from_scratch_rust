@@ -1,8 +1,11 @@
 #![warn(clippy::pedantic, clippy::nursery)]
 
-use std::{ops::{Sub, Add}, time::Instant};
+use std::{
+    ops::{Add, Sub},
+    time::Instant,
+};
 
-use model::layer::{dense::Dense};
+use model::layer::{activation::linear::Linear, dense::Dense, Layer};
 use ndarray::{array, s};
 
 const PRINT_PERFORMANCE: bool = true;
@@ -28,11 +31,7 @@ fn adding_layers() {
 
     // Set the biases
     let bias = array![2.0, 3.0, 0.5];
-    let weights2 = array![
-        [0.1, -0.14, 0.5],
-        [-0.5, 0.12, -0.33],
-        [-0.44, 0.73, -0.13],
-    ];
+    let weights2 = array![[0.1, -0.14, 0.5], [-0.5, 0.12, -0.33], [-0.44, 0.73, -0.13],];
 
     // Set the biases
     let bias2 = array![-1.0, 2.0, -0.5];
@@ -75,7 +74,7 @@ fn dense_layer_class() {
     let (x, _) = datasets::spiral(5_000_000, 3);
 
     // Create a dense layer
-    let mut dense1 = Dense::new(2, 3);
+    let mut dense1 = Dense::<2, 3, Linear>::default();
 
     // Pass the data through the layer
     dense1.forward(&x);
