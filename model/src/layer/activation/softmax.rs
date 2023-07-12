@@ -39,7 +39,7 @@ impl Activation for Softmax {
     /// # Returns
     /// A constant reference to the data.
     #[must_use]
-    fn get_outputs(&self) -> &Array2<f64> {
+    fn outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 }

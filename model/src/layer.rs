@@ -12,7 +12,7 @@ pub trait Layer<ActFunc: Activation>: Debug {
     fn forward(&mut self, inputs: &Array2<f64>);
 
     /// Retrieves the outputs
-    fn get_outputs(&self) -> &Array2<f64>;
+    fn outputs(&self) -> &Array2<f64>;
 
     /// Returns the shape of the weights
     fn weights_shape(&self) -> &[usize];

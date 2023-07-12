@@ -22,7 +22,7 @@ impl Activation for Linear {
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &Array2<f64> {
+    fn outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 }

@@ -3,7 +3,7 @@ use ndarray::Array2;
 use super::Activation;
 
 #[derive(Debug, Clone, Default)]
-pub struct ReLU {
+pub struct ReLU{
     outputs: Array2<f64>,
 }
 
@@ -22,7 +22,7 @@ impl Activation for ReLU {
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &Array2<f64> {
+    fn outputs(&self) -> &Array2<f64> {
         &self.outputs
     }
 }

@@ -5,7 +5,7 @@ use std::time::Instant;
 use model::layer::{
     activation::{relu::ReLU, softmax::Softmax},
     dense::Dense,
-    Layer,
+    Layer
 };
 use ndarray::s;
 
@@ -29,7 +29,7 @@ fn relu_test() {
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{}", &dense1.get_outputs().slice(s![..5, ..]));
+        println!("{}", &dense1.outputs().slice(s![..5, ..]));
     }
 
     // Print the performance, if needed
@@ -52,11 +52,11 @@ fn softmax_test() {
 
     // pass the input data in order through the layer
     layers.0.forward(&x);
-    layers.1.forward(layers.0.get_outputs());
+    layers.1.forward(layers.0.outputs());
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{}", &layers.1.get_outputs().slice(s![..5, ..]));
+        println!("{}", &layers.1.outputs().slice(s![..5, ..]));
     }
 
     // Print the performance, if needed

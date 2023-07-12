@@ -31,8 +31,8 @@ impl<ActFunc: Activation, const IN: usize, const OUT: usize> Layer<ActFunc>
     ///
     /// # Returns
     /// A constant reference to the data.
-    fn get_outputs(&self) -> &Array2<f64> {
-        self.activation.get_outputs()
+    fn outputs(&self) -> &Array2<f64> {
+        self.activation.outputs()
     }
 
     /// Returns the shape of the weights

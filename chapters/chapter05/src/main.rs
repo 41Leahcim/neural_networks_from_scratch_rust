@@ -29,15 +29,15 @@ fn categorical_crossentropy_test() {
 
     // pass the input data in order through the layer
     layers.0.forward(&x);
-    layers.1.forward(layers.0.get_outputs());
+    layers.1.forward(layers.0.outputs());
 
     // Create a loss function, and calculate loss
     let loss_function = CategoricalCrossentropy::default();
-    let loss = loss_function.calculate(layers.1.get_outputs(), &y);
+    let loss = loss_function.calculate(layers.1.outputs(), &y);
 
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{:?}", &layers.1.get_outputs());
+        println!("{:?}", &layers.1.outputs());
     }
 
     // Print the loss, if needed
@@ -47,7 +47,7 @@ fn categorical_crossentropy_test() {
 
     // Calculate and print the loss, if needed
     if PRINT_ACCURACY {
-        println!("Accuracy: {}", accuracy(layers.1.get_outputs(), &y));
+        println!("Accuracy: {}", accuracy(layers.1.outputs(), &y));
     }
 
     // Print the performance, if needed

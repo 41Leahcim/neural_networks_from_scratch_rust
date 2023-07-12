@@ -81,7 +81,7 @@ fn dense_layer_class() {
 
     // Print the outputs if needed
     if PRINT_OUTPUT {
-        println!("{}", &dense1.get_outputs().slice(s![..5, ..]));
+        println!("{}", &dense1.outputs().slice(s![..5, ..]));
     }
 
     // Print the performance if needed
