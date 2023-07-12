@@ -29,7 +29,6 @@ fn categorical_crossentropy_test() {
     let loss_function = CategoricalCrossentropy::default();
 
     let mut best_loss = f64::MAX;
-    let mut best_layers = layers.clone();
 
     let mut i: i128 = 0;
     let start = Instant::now();
@@ -44,7 +43,6 @@ fn categorical_crossentropy_test() {
         if loss < best_loss {
             println!("Generation: {i}");
             best_loss = loss;
-            best_layers = layers.clone();
 
             // Print the loss, if needed
             if PRINT_LOSS {
@@ -56,15 +54,10 @@ fn categorical_crossentropy_test() {
                 println!("Accuracy: {}", accuracy(layers.1.get_outputs(), &y));
             }
             println!();
-        } else {
-            layers = best_layers.clone();
         }
 
         // Change the weights for the next iteration
-        layers = (
-            Dense::<2, 3, _>::new(layers.0.activation()),
-            Dense::<3, 3, _>::new(layers.1.activation()),
-        );
+        layers = (Dense::<2, 3, _>::default(), Dense::<3, 3, _>::default());
         i += 1;
     }
 }

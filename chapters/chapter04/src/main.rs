@@ -3,7 +3,7 @@
 use std::time::Instant;
 
 use model::layer::{
-    activation::{linear::Linear, relu::ReLU, softmax::Softmax, Activation},
+    activation::{relu::ReLU, softmax::Softmax},
     dense::Dense,
     Layer,
 };
@@ -20,20 +20,16 @@ fn relu_test() {
     let (x, _) = datasets::spiral(4_000_000, 3);
 
     // Create a layer
-    let mut dense1 = Dense::<2, 3, Linear>::default();
+    let mut dense1 = Dense::<2, 3, ReLU>::default();
 
     // Create a ReLU (rectified linear) activation function
-    let mut activation = ReLU::default();
 
     // Forward the data through the dense layer
     dense1.forward(&x);
 
-    // Forward the output from the previous layer through the activation function
-    activation.forward(dense1.get_outputs());
-
     // Print the first few results, if needed
     if PRINT_OUTPUT {
-        println!("{}", &activation.get_outputs().slice(s![..5, ..]));
+        println!("{}", &dense1.get_outputs().slice(s![..5, ..]));
     }
 
     // Print the performance, if needed
@@ -47,7 +43,7 @@ fn softmax_test() {
     let start = Instant::now();
 
     // Create the data
-    let (x, _) = datasets::spiral(1_000_000, 3);
+    let (x, _) = datasets::spiral(2_000_000, 3);
 
     let mut layers = (
         Dense::<2, 3, ReLU>::default(), // Create a dense layer as input layer with a rectified Linear Activation funtion

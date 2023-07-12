@@ -13,7 +13,7 @@ impl Activation for ReLU {
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    fn forward(&mut self, inputs: &Array2<f64>) {
+    fn forward(&mut self, inputs: Array2<f64>) {
         self.outputs = inputs.mapv(|value| value.max(0.0));
     }
 

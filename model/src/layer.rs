@@ -21,5 +21,5 @@ pub trait Layer<ActFunc: Activation>: Debug {
     fn biases_shape(&self) -> &[usize];
 
     // Return activation layer
-    fn activation(&self) -> ActFunc;
+    fn activation(&self) -> &ActFunc;
 }

@@ -13,7 +13,7 @@ impl Activation for Softmax {
     ///
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
-    fn forward(&mut self, inputs: &Array2<f64>) {
+    fn forward(&mut self, inputs: Array2<f64>) {
         let output_vec = inputs
             .axis_iter(Axis(0))
             .map(|row| {

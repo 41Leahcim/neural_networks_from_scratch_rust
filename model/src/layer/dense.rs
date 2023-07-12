@@ -9,11 +9,10 @@ use super::{activation::Activation, Layer};
 pub struct Dense<const IN: usize, const OUT: usize, T: Activation> {
     weights: Array2<f64>,
     biases: Array1<f64>,
-    outputs: Array2<f64>,
     activation: T,
 }
 
-impl<ActFunc: Activation + Clone, const IN: usize, const OUT: usize> Layer<ActFunc>
+impl<ActFunc: Activation, const IN: usize, const OUT: usize> Layer<ActFunc>
     for Dense<IN, OUT, ActFunc>
 {
     /// Passes data through the layer, the values will be multiplied by the weights.
@@ -23,9 +22,8 @@ impl<ActFunc: Activation + Clone, const IN: usize, const OUT: usize> Layer<ActFu
     /// # Arguments
     /// ```inputs```: The inputs to process, output from the previous layer
     fn forward(&mut self, inputs: &Array2<f64>) {
-        self.outputs = inputs.dot(&self.weights).add(&self.biases);
-        self.activation.forward(&self.outputs);
-        self.outputs = self.activation.get_outputs().clone();
+        let outputs = inputs.dot(&self.weights).add(&self.biases);
+        self.activation.forward(outputs);
     }
 
     /// Returns a constant reference to the data.
@@ -34,7 +32,7 @@ impl<ActFunc: Activation + Clone, const IN: usize, const OUT: usize> Layer<ActFu
     /// # Returns
     /// A constant reference to the data.
     fn get_outputs(&self) -> &Array2<f64> {
-        &self.outputs
+        self.activation.get_outputs()
     }
 
     /// Returns the shape of the weights
@@ -47,14 +45,12 @@ impl<ActFunc: Activation + Clone, const IN: usize, const OUT: usize> Layer<ActFu
         self.biases.shape()
     }
 
-    fn activation(&self) -> ActFunc {
-        self.activation.clone()
+    fn activation(&self) -> &ActFunc {
+        &self.activation
     }
 }
 
-impl<T: Activation + Clone + Default, const IN: usize, const OUT: usize> Default
-    for Dense<IN, OUT, T>
-{
+impl<T: Activation + Default, const IN: usize, const OUT: usize> Default for Dense<IN, OUT, T> {
     fn default() -> Self {
         Self::new(T::default())
     }
@@ -70,7 +66,6 @@ impl<ActFunc: Activation, const IN: usize, const OUT: usize> Dense<IN, OUT, ActF
         Self {
             weights,
             biases,
-            outputs: Array2::zeros((0, 0)),
             activation,
         }
     }
