@@ -1,10 +1,17 @@
-struct Neuron<const INPUTS: usize> {
+#![warn(clippy::pedantic, clippy::nursery)]
+#![allow(clippy::must_use_candidate)]
+
+pub struct Neuron<const INPUTS: usize> {
     weights: [f64; INPUTS],
     bias: f64,
 }
 
 impl<const INPUTS: usize> Neuron<INPUTS> {
-    fn forward(&self, inputs: &[f64]) -> f64 {
+    pub const fn new(weights: [f64; INPUTS], bias: f64) -> Self {
+        Self { weights, bias }
+    }
+
+    pub fn forward(&self, inputs: &[f64]) -> f64 {
         self.weights
             .iter()
             .zip(inputs)
@@ -19,7 +26,11 @@ pub struct Layer<const INPUTS: usize, const OUTPUTS: usize> {
 }
 
 impl<const INPUTS: usize, const OUTPUTS: usize> Layer<INPUTS, OUTPUTS> {
-    fn forward(&self, inputs: &[f64]) -> Vec<f64> {
+    pub const fn new(neurons: [Neuron<INPUTS>; OUTPUTS]) -> Self {
+        Self { neurons }
+    }
+
+    pub fn forward(&self, inputs: &[f64]) -> Vec<f64> {
         self.neurons
             .iter()
             .map(|neuron| neuron.forward(inputs))
@@ -27,6 +38,7 @@ impl<const INPUTS: usize, const OUTPUTS: usize> Layer<INPUTS, OUTPUTS> {
     }
 }
 
+#[test]
 fn single_neuron() {
     let inputs = [1.0, 2.0, 3.0];
     let neuron = Neuron {
@@ -38,6 +50,7 @@ fn single_neuron() {
     println!("{output}");
 }
 
+#[test]
 fn neuron_layer() {
     let inputs = [1.0, 2.0, 3.0, 2.5];
     let neurons = Layer {
@@ -61,6 +74,7 @@ fn neuron_layer() {
     assert_eq!(output, [4.8, 1.21, 2.385]);
 }
 
+#[test]
 fn neuron_layer_with_batch_of_data() {
     let inputs = [
         [1.0, 2.0, 3.0, 2.5],
@@ -92,14 +106,12 @@ fn neuron_layer_with_batch_of_data() {
         outputs,
         [
             [4.8, 1.21, 2.385],
-            [8.9, -1.8099999999999996, 0.19999999999999996],
-            [1.4100000000000001, 1.0509999999999997, 0.025999999999999912]
+            [8.9, -1.809_999_999_999_999_6, 0.199_999_999_999_999_96],
+            [
+                1.410_000_000_000_000_1,
+                1.050_999_999_999_999_7,
+                0.025_999_999_999_999_912
+            ]
         ]
     );
-}
-
-fn main() {
-    single_neuron();
-    neuron_layer();
-    neuron_layer_with_batch_of_data();
 }

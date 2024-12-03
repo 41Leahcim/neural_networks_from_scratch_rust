@@ -1,3 +1,10 @@
 [workspace]
 resolver = "2"
 members = ["chapter02"]
+
+[profile.release]
+strip = true
+opt-level = 'z'
+codegen-units = 1
+lto = "fat"
+panic = "abort"
