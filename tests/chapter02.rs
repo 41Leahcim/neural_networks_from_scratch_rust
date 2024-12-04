@@ -1,4 +1,4 @@
-use nnfs::{Layer, Neuron};
+use nnfs::{DenseLayer as Layer, Neuron};
 
 #[test]
 fn single_neuron() {

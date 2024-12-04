@@ -1,6 +1,10 @@
 #![warn(clippy::pedantic, clippy::nursery)]
 #![allow(clippy::must_use_candidate)]
 
+use core::array;
+use rand::Rng;
+pub mod dataset;
+
 pub struct Neuron<const INPUTS: usize> {
     weights: [f64; INPUTS],
     bias: f64,
@@ -21,13 +25,22 @@ impl<const INPUTS: usize> Neuron<INPUTS> {
     }
 }
 
-pub struct Layer<const INPUTS: usize, const OUTPUTS: usize> {
+pub struct DenseLayer<const INPUTS: usize, const OUTPUTS: usize> {
     neurons: [Neuron<INPUTS>; OUTPUTS],
 }
 
-impl<const INPUTS: usize, const OUTPUTS: usize> Layer<INPUTS, OUTPUTS> {
+impl<const INPUTS: usize, const OUTPUTS: usize> DenseLayer<INPUTS, OUTPUTS> {
     pub const fn new(neurons: [Neuron<INPUTS>; OUTPUTS]) -> Self {
         Self { neurons }
+    }
+
+    pub fn random() -> Self {
+        let mut random = rand::thread_rng();
+        Self {
+            neurons: array::from_fn(|_| {
+                Neuron::new(array::from_fn(|_| random.gen_range(-0.02..=0.02)), 0.0)
+            }),
+        }
     }
 
     pub fn forward_sample(&self, inputs: &[f64]) -> Vec<f64> {
