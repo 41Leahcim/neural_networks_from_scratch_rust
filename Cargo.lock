@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "chapter02"
+name = "nnfs"
 version = "0.1.0"
