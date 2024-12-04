@@ -1,4 +1,4 @@
-pub fn spiral(samples: u8, classes: u8) -> (Vec<[f64; 2]>, Vec<u8>) {
+pub fn spiral(samples: u16, classes: u16) -> (Vec<[f64; 2]>, Vec<u16>) {
     let mut data = Vec::with_capacity(usize::from(samples) * usize::from(classes));
     let mut labels = Vec::with_capacity(usize::from(samples) * usize::from(classes));
 
