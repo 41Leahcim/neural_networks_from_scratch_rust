@@ -3,6 +3,8 @@
 
 use core::array;
 use rand::Rng;
+
+pub mod activation;
 pub mod dataset;
 
 pub struct Neuron<const INPUTS: usize> {
