@@ -1,3 +1,6 @@
+//! Contains all datasets used in the book.
+
+/// Generates a data set of `classes` spirals consisting of `samples` points each.
 pub fn spiral(samples: u16, classes: u16) -> (Vec<[f64; 2]>, Vec<u16>) {
     let mut data = Vec::with_capacity(usize::from(samples) * usize::from(classes));
     let mut labels = Vec::with_capacity(usize::from(samples) * usize::from(classes));
