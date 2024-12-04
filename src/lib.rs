@@ -15,10 +15,10 @@ impl<const INPUTS: usize> Neuron<INPUTS> {
         Self { weights, bias }
     }
 
-    pub fn forward(&self, inputs: &[f64]) -> f64 {
+    pub fn forward<Input: AsRef<[f64]>>(&self, inputs: Input) -> f64 {
         self.weights
             .iter()
-            .zip(inputs)
+            .zip(inputs.as_ref())
             .map(|(&weight, &input)| weight * input)
             .sum::<f64>()
             + self.bias
@@ -43,16 +43,19 @@ impl<const INPUTS: usize, const OUTPUTS: usize> DenseLayer<INPUTS, OUTPUTS> {
         }
     }
 
-    pub fn forward_sample(&self, inputs: &[f64]) -> Vec<f64> {
+    pub fn forward_sample<Sample: AsRef<[f64]> + Copy>(&self, inputs: Sample) -> Vec<f64> {
         self.neurons
             .iter()
             .map(|neuron| neuron.forward(inputs))
             .collect()
     }
 
-    pub fn forward_batch<Sample: AsRef<[f64]>>(&self, inputs: &[Sample]) -> Vec<Vec<f64>> {
+    pub fn forward_batch<Sample: AsRef<[f64]>, Input: IntoIterator<Item = Sample>>(
+        &self,
+        inputs: Input,
+    ) -> Vec<Vec<f64>> {
         inputs
-            .iter()
+            .into_iter()
             .map(|input| self.forward_sample(input.as_ref()))
             .collect::<Vec<_>>()
     }

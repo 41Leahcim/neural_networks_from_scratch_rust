@@ -4,7 +4,7 @@ use nnfs::{DenseLayer as Layer, Neuron};
 fn single_neuron() {
     let inputs = [1.0, 2.0, 3.0];
     let neuron = Neuron::new([0.2, 0.8, -0.5], 2.0);
-    let output = neuron.forward(&inputs);
+    let output = neuron.forward(inputs);
     assert!((output - 2.3).abs() < f64::EPSILON);
     println!("{output}");
 }
@@ -17,7 +17,7 @@ fn neuron_layer() {
         Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
         Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
     ]);
-    let output = neurons.forward_sample(&inputs);
+    let output = neurons.forward_sample(inputs);
     println!("{output:?}");
     assert_eq!(output, [4.8, 1.21, 2.385]);
 }
@@ -34,7 +34,7 @@ fn neuron_layer_with_batch_of_data() {
         Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
         Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
     ]);
-    let outputs = neurons.forward_batch(&inputs);
+    let outputs = neurons.forward_batch(inputs);
     println!("{outputs:?}");
     assert_eq!(
         outputs,

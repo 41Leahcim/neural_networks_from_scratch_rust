@@ -7,7 +7,7 @@ edition = "2021"
 rand = "0.8.5"
 
 [profile.release]
-strip = true
+debug = true
 opt-level = 'z'
 codegen-units = 1
 lto = "fat"
