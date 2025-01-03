@@ -10,7 +10,7 @@ fn relu() {
     let mut output = dense.forward_batch(&data.0);
     let activation = ReLU;
     output = activation.forward(output);
-    assert_eq!(output.len(), 10_000_000);
+    assert_eq!(output.len(), 1_000_000);
     assert_eq!(output[0].len(), 3);
 }
 

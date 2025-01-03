@@ -32,11 +32,11 @@ impl Network {
 
 fn main() {
     let start = Instant::now();
-    let data = dataset::spiral(1_000, 1_000);
+    let data = dataset::spiral(10_000, 1_000);
     let network = Network::new();
     let output = network.forward(data.0);
     println!("{:?}", &output[..5]);
-    assert_eq!(output.len(), 1_000_000);
+    assert_eq!(output.len(), 10_000_000);
     assert_eq!(output[0].len(), 3);
     println!("{:?}", start.elapsed());
 }

@@ -6,6 +6,9 @@
 use core::array;
 use rand::Rng;
 
+#[cfg(feature = "rayon")]
+use rayon::iter::{IntoParallelIterator, ParallelIterator as _};
+
 pub mod activation;
 pub mod dataset;
 
@@ -67,6 +70,20 @@ impl<const INPUTS: usize, const OUTPUTS: usize> DenseLayer<INPUTS, OUTPUTS> {
 
     /// Forwards multiple samples through all neurons in the layer.
     /// The size of the outer vector will stay the same, the inner size will become `OUTPUT`.
+    #[cfg(feature = "rayon")]
+    pub fn forward_batch<Sample: AsRef<[f64]>, Input: IntoParallelIterator<Item = Sample>>(
+        &self,
+        inputs: Input,
+    ) -> Vec<Vec<f64>> {
+        inputs
+            .into_par_iter()
+            .map(|input| self.forward_sample(input.as_ref()))
+            .collect::<Vec<_>>()
+    }
+
+    /// Forwards multiple samples through all neurons in the layer.
+    /// The size of the outer vector will stay the same, the inner size will become `OUTPUT`.
+    #[cfg(not(feature = "rayon"))]
     pub fn forward_batch<Sample: AsRef<[f64]>, Input: IntoIterator<Item = Sample>>(
         &self,
         inputs: Input,

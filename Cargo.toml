@@ -3,8 +3,12 @@ name = "nnfs"
 version = "0.2.0"
 edition = "2021"
 
+[features]
+rayon = ["dep:rayon"]
+
 [dependencies]
 rand = "0.8.5"
+rayon = { version = "1.10.0", optional = true }
 
 [profile.release]
 debug = true
