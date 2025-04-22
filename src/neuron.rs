@@ -21,6 +21,8 @@ impl<const SIZE: usize> Neuron<SIZE> {
 
 #[cfg(test)]
 mod tests {
+    use crate::float_equal;
+
     use super::Neuron;
 
     #[test]
@@ -28,7 +30,7 @@ mod tests {
         let inputs = [1.0, 2.0, 3.0];
         let neuron = Neuron::new([0.2, 0.8, -0.5], 2.0);
         let output = neuron.forward(&inputs);
-        assert!((output - 2.3).abs() < 0.0001);
+        assert!(float_equal(output, 2.3));
     }
 
     #[test]
@@ -36,6 +38,6 @@ mod tests {
         let inputs = [1.0, 2.0, 3.0, 2.5];
         let neuron = Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0);
         let output = neuron.forward(&inputs);
-        assert!((output - 4.8).abs() < 0.0001);
+        assert!(float_equal(output, 4.8));
     }
 }
