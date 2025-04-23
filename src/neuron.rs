@@ -27,17 +27,17 @@ mod tests {
 
     #[test]
     fn test1() {
-        let inputs = [1.0, 2.0, 3.0];
-        let neuron = Neuron::new([0.2, 0.8, -0.5], 2.0);
-        let output = neuron.forward(&inputs);
-        assert!(float_equal(output, 2.3));
+        const INPUTS: [f64; 3] = [1.0, 2.0, 3.0];
+        const NEURON: Neuron<3> = Neuron::new([0.2, 0.8, -0.5], 2.0);
+        const OUTPUT: f64 = NEURON.forward(&INPUTS);
+        assert!(float_equal(OUTPUT, 2.3));
     }
 
     #[test]
     fn test2() {
-        let inputs = [1.0, 2.0, 3.0, 2.5];
-        let neuron = Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0);
-        let output = neuron.forward(&inputs);
-        assert!(float_equal(output, 4.8));
+        const INPUTS: [f64; 4] = [1.0, 2.0, 3.0, 2.5];
+        const NEURON: Neuron<4> = Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0);
+        const OUTPUT: f64 = NEURON.forward(&INPUTS);
+        assert!(float_equal(OUTPUT, 4.8));
     }
 }

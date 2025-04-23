@@ -35,15 +35,15 @@ mod tests {
 
     #[test]
     fn layer_with_sample() {
-        let inputs = [1.0, 2.0, 3.0, 2.5];
-        let layer = Layer::new([
+        const INPUTS: [f64; 4] = [1.0, 2.0, 3.0, 2.5];
+        const LAYER: Layer<4, 3> = Layer::new([
             Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0),
             Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
             Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
         ]);
-        let outputs = layer.forward_sample(&inputs);
+        const OUTPUTS: [f64; 3] = LAYER.forward_sample(&INPUTS);
         assert!(
-            outputs
+            OUTPUTS
                 .into_iter()
                 .zip([4.8, 1.21, 2.385])
                 .all(|(left, right)| float_equal(left, right))
@@ -52,19 +52,19 @@ mod tests {
 
     #[test]
     fn layer_with_batch() {
-        let inputs = [
+        const INPUTS: [[f64; 4]; 3] = [
             [1.0, 2.0, 3.0, 2.5],
             [2.0, 5.0, -1.0, 2.0],
             [-1.5, 2.7, 3.3, -0.8],
         ];
-        let layer = Layer::new([
+        const LAYER: Layer<4, 3> = Layer::new([
             Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0),
             Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
             Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
         ]);
         assert!(
-            layer
-                .forward_batch(inputs)
+            LAYER
+                .forward_batch(INPUTS)
                 .flatten()
                 .zip(
                     [[4.8, 1.21, 2.385], [8.9, -1.81, 0.2], [1.41, 1.051, 0.026]]
