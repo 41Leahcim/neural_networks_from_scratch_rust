@@ -1,5 +1,6 @@
 #![no_std]
 
+pub mod activation;
 #[cfg(feature = "dataset")]
 pub mod dataset;
 pub mod layer;
