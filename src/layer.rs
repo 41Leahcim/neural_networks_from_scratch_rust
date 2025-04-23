@@ -44,7 +44,9 @@ impl<const INPUT: usize, const OUTPUT: usize> Distribution<Dense<INPUT, OUTPUT>>
 
 #[cfg(test)]
 mod tests {
-    use crate::{float_equal, neuron::Neuron};
+    use rand::random;
+
+    use crate::{dataset::spiral, float_equal, neuron::Neuron};
 
     use super::Dense;
 
@@ -122,5 +124,14 @@ mod tests {
                 )
                 .all(|(left, right)| float_equal(left, right))
         )
+    }
+
+    #[test]
+    fn layer_with_dataset() {
+        let (x, _) = spiral(100, 3);
+        let dense = random::<Dense<2, 3>>();
+        let mut output = dense.forward_batch(x);
+        assert!(output.next().unwrap().into_iter().all(|value| value == 0.0));
+        assert!(output.take(5).flatten().all(|value| value != 0.0));
     }
 }
