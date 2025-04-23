@@ -74,4 +74,38 @@ mod tests {
                 .all(|(left, right)| float_equal(left, right))
         )
     }
+
+    #[test]
+    fn multiple_layers() {
+        const INPUTS: [[f64; 4]; 3] = [
+            [1.0, 2.0, 3.0, 2.5],
+            [2.0, 5.0, -1.0, 2.0],
+            [-1.5, 2.7, 3.3, -0.8],
+        ];
+        const LAYER: Layer<4, 3> = Layer::new([
+            Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0),
+            Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
+            Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
+        ]);
+        const LAYER2: Layer<3, 3> = Layer::new([
+            Neuron::new([0.1, -0.14, 0.5], -1.0),
+            Neuron::new([-0.5, 0.12, -0.33], 2.0),
+            Neuron::new([-0.44, 0.73, -0.13], -0.5),
+        ]);
+        assert!(
+            LAYER2
+                .forward_batch(LAYER.forward_batch(INPUTS))
+                .flatten()
+                .zip(
+                    [
+                        [0.5031, -1.04185, -2.03875],
+                        [0.2434, -2.7332, -5.7633],
+                        [-0.99314, 1.41254, -0.35655]
+                    ]
+                    .into_iter()
+                    .flatten()
+                )
+                .all(|(left, right)| float_equal(left, right))
+        )
+    }
 }
