@@ -9,6 +9,7 @@ pub fn spiral(
         (0..samples)
             .zip(rand::random_iter::<f64>())
             .map(move |(sample_number, noise)| {
+                let noise = 2.0 * noise - 1.0;
                 let r = 1.0 / samples as f64 * sample_number as f64;
                 let t = t_offset + 4.0 / samples as f64 * sample_number as f64 + noise;
                 let (x, y) = t.sin_cos();
@@ -35,7 +36,10 @@ pub fn vertical(
     let x = (0..classes).flat_map(move |class_number| {
         (0..samples)
             .zip(rand::random_iter::<f64>())
-            .map(move |(_, noise)| [noise * 0.1 + class_number as f64 / 3.0, noise * 0.1 + 0.5])
+            .map(move |(_, noise)| {
+                let noise = (noise * 2.0 - 1.0) * 0.1;
+                [noise + class_number as f64 / 3.0, noise + 0.5]
+            })
     });
     let y = (0..classes).flat_map(move |class_number| {
         iter::repeat_n(class_number, samples).map(|sample| sample as f64)

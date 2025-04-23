@@ -27,7 +27,7 @@ impl<const SIZE: usize> Neuron<SIZE> {
 impl<const SIZE: usize> Distribution<Neuron<SIZE>> for StandardUniform {
     fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Neuron<SIZE> {
         Neuron {
-            weights: array::from_fn(|_| rng.random::<f64>() * 0.01),
+            weights: array::from_fn(|_| rng.random_range(0.01..=0.01)),
             bias: 0.0,
         }
     }
