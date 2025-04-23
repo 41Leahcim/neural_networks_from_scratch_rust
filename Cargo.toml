@@ -3,4 +3,9 @@ name = "neural_networks_from_scratch"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = ["dataset"]
+dataset = ["dep:rand"]
+
 [dependencies]
+rand = { version = "0.9", optional = true }

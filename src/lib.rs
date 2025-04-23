@@ -1,5 +1,7 @@
 #![no_std]
 
+#[cfg(feature = "dataset")]
+pub mod dataset;
 pub mod layer;
 pub mod neuron;
 
