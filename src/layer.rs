@@ -1,10 +1,16 @@
+#[cfg(feature = "rand")]
+use core::array;
+
+#[cfg(feature = "rand")]
+use rand::distr::{Distribution, StandardUniform};
+
 use crate::neuron::Neuron;
 
-pub struct Layer<const INPUT: usize, const OUTPUT: usize> {
+pub struct Dense<const INPUT: usize, const OUTPUT: usize> {
     neurons: [Neuron<INPUT>; OUTPUT],
 }
 
-impl<const INPUT: usize, const OUTPUT: usize> Layer<INPUT, OUTPUT> {
+impl<const INPUT: usize, const OUTPUT: usize> Dense<INPUT, OUTPUT> {
     pub const fn new(neurons: [Neuron<INPUT>; OUTPUT]) -> Self {
         Self { neurons }
     }
@@ -27,16 +33,25 @@ impl<const INPUT: usize, const OUTPUT: usize> Layer<INPUT, OUTPUT> {
     }
 }
 
+#[cfg(feature = "rand")]
+impl<const INPUT: usize, const OUTPUT: usize> Distribution<Dense<INPUT, OUTPUT>>
+    for StandardUniform
+{
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Dense<INPUT, OUTPUT> {
+        Dense::new(array::from_fn(|_| rng.random()))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{float_equal, neuron::Neuron};
 
-    use super::Layer;
+    use super::Dense;
 
     #[test]
     fn layer_with_sample() {
         const INPUTS: [f64; 4] = [1.0, 2.0, 3.0, 2.5];
-        const LAYER: Layer<4, 3> = Layer::new([
+        const LAYER: Dense<4, 3> = Dense::new([
             Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0),
             Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
             Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
@@ -57,7 +72,7 @@ mod tests {
             [2.0, 5.0, -1.0, 2.0],
             [-1.5, 2.7, 3.3, -0.8],
         ];
-        const LAYER: Layer<4, 3> = Layer::new([
+        const LAYER: Dense<4, 3> = Dense::new([
             Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0),
             Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
             Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
@@ -82,12 +97,12 @@ mod tests {
             [2.0, 5.0, -1.0, 2.0],
             [-1.5, 2.7, 3.3, -0.8],
         ];
-        const LAYER: Layer<4, 3> = Layer::new([
+        const LAYER: Dense<4, 3> = Dense::new([
             Neuron::new([0.2, 0.8, -0.5, 1.0], 2.0),
             Neuron::new([0.5, -0.91, 0.26, -0.5], 3.0),
             Neuron::new([-0.26, -0.27, 0.17, 0.87], 0.5),
         ]);
-        const LAYER2: Layer<3, 3> = Layer::new([
+        const LAYER2: Dense<3, 3> = Dense::new([
             Neuron::new([0.1, -0.14, 0.5], -1.0),
             Neuron::new([-0.5, 0.12, -0.33], 2.0),
             Neuron::new([-0.44, 0.73, -0.13], -0.5),

@@ -1,3 +1,7 @@
+use core::array;
+
+use rand::distr::{Distribution, StandardUniform};
+
 pub struct Neuron<const SIZE: usize> {
     weights: [f64; SIZE],
     bias: f64,
@@ -16,6 +20,16 @@ impl<const SIZE: usize> Neuron<SIZE> {
             i += 1;
         }
         result
+    }
+}
+
+#[cfg(feature = "rand")]
+impl<const SIZE: usize> Distribution<Neuron<SIZE>> for StandardUniform {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Neuron<SIZE> {
+        Neuron {
+            weights: array::from_fn(|_| rng.random::<f64>() * 0.01),
+            bias: 0.0,
+        }
     }
 }
 
