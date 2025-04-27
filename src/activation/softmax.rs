@@ -5,9 +5,7 @@ pub struct Softmax;
 impl Softmax {
     pub fn forward_sample<const SIZE: usize>(&self, sample: &[f64; SIZE]) -> [f64; SIZE] {
         let exp_values: [f64; SIZE] = array::from_fn(|i| sample[i].exp());
-        eprintln!("{exp_values:?}");
         let sum = exp_values.iter().sum::<f64>();
-        eprintln!("{sum}");
         array::from_fn(|i| exp_values[i] / sum)
     }
 
