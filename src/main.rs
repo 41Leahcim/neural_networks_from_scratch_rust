@@ -1,13 +1,13 @@
 use neural_networks_from_scratch::{
     activation::{relu::ReLu, softmax::Softmax},
-    dataset::vertical,
+    dataset::spiral,
     layer::Dense,
     loss::{Loss, accuracy, categorical_crossentropy::CategoricalCrossentropy},
 };
 use rand::{random, random_range};
 
 fn main() {
-    let (x, y) = vertical(100, 3);
+    let (x, y) = spiral(100, 3);
     let (x, y) = (
         x.collect::<Vec<_>>(),
         y.map(|value| [value]).collect::<Vec<_>>(),
@@ -27,7 +27,7 @@ fn main() {
     let mut best_dense1 = dense1.clone();
     let mut best_dense2 = dense2.clone();
 
-    for iteration in 0..1_000 {
+    for iteration in 0..10_000 {
         // Generate a new set of weights for iteration
         dense1.neurons.iter_mut().for_each(|neuron| {
             neuron
