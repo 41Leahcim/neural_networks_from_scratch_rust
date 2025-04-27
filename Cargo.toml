@@ -9,4 +9,5 @@ dataset = ["dep:rand"]
 rand = ["dep:rand"]
 
 [dependencies]
+# Requires std
 rand = { version = "0.9", optional = true }
