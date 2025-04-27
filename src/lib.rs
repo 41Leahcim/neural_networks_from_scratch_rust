@@ -7,24 +7,23 @@ pub mod layer;
 pub mod loss;
 pub mod neuron;
 
-#[cfg(test)]
 const fn float_equal(left: f64, right: f64) -> bool {
     (left - right).abs() < 1e-5
 }
 
 #[cfg(test)]
 mod tests {
-    use core::array;
-
-    use rand::random;
+    extern crate alloc;
 
     use crate::{
         activation::{relu::ReLu, softmax::Softmax},
         dataset::spiral,
         float_equal,
         layer::Dense,
-        loss::{Loss, categorical_crossentropy::CategoricalCrossentropy},
+        loss::{Loss, accuracy, categorical_crossentropy::CategoricalCrossentropy},
     };
+    use alloc::vec::Vec;
+    use rand::random;
 
     #[test]
     fn dense_layer_with_relu() {
@@ -86,13 +85,13 @@ mod tests {
         let output = dense1.forward_batch(x);
         let output = activation1.forward_batch(output);
         let output = dense2.forward_batch(output);
-        let mut output = activation2.forward_batch(output);
-        let output_array: [[f64; 3]; SAMPLES * CLASSES] =
-            array::from_fn(|_| output.next().unwrap());
-        assert!(output.next().is_none());
+        let output = activation2.forward_batch(output);
+        let output = output.collect::<Vec<_>>();
+        let y = y.map(|value| [value]).collect::<Vec<_>>();
         assert!(float_equal(
-            loss_function.calculate(&output_array, y.map(|value| [value])),
+            loss_function.calculate(&output, y.iter().copied()),
             1.0986104
         ));
+        assert!(float_equal(accuracy(&output, y.iter().copied()), 1.0 / 3.0));
     }
 }
