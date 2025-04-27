@@ -4,14 +4,16 @@ pub fn spiral(
     samples: usize,
     classes: usize,
 ) -> (impl Iterator<Item = [f64; 2]>, impl Iterator<Item = f64>) {
+    let linspace_sample_divider = samples.saturating_sub(1);
     let x = (0..classes).flat_map(move |class_number| {
         let t_offset = class_number as f64 * 4.0;
         (0..samples)
             .zip(rand::random_iter::<f64>())
             .map(move |(sample_number, noise)| {
                 let noise = 2.0 * noise - 1.0;
-                let r = 1.0 / samples as f64 * sample_number as f64;
-                let t = t_offset + 4.0 / samples as f64 * sample_number as f64 + noise;
+                let r = sample_number as f64 / linspace_sample_divider as f64;
+                let t =
+                    t_offset + 4.0 / linspace_sample_divider as f64 * sample_number as f64 + noise;
                 let (x, y) = t.sin_cos();
                 [r * x, r * y]
             })
