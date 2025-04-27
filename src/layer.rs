@@ -6,8 +6,9 @@ use rand::distr::{Distribution, StandardUniform};
 
 use crate::neuron::Neuron;
 
+#[derive(Debug, Clone)]
 pub struct Dense<const INPUT: usize, const OUTPUT: usize> {
-    neurons: [Neuron<INPUT>; OUTPUT],
+    pub neurons: [Neuron<INPUT>; OUTPUT],
 }
 
 impl<const INPUT: usize, const OUTPUT: usize> Dense<INPUT, OUTPUT> {

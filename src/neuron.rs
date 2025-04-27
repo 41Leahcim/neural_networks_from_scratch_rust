@@ -2,9 +2,10 @@ use core::array;
 
 use rand::distr::{Distribution, StandardUniform};
 
+#[derive(Debug, Clone)]
 pub struct Neuron<const SIZE: usize> {
-    weights: [f64; SIZE],
-    bias: f64,
+    pub weights: [f64; SIZE],
+    pub bias: f64,
 }
 
 impl<const SIZE: usize> Neuron<SIZE> {
