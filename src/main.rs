@@ -1,11 +1,14 @@
+#[cfg(all(feature = "std", feature = "rand", feature = "dataset"))]
 use neural_networks_from_scratch::{
     activation::{relu::ReLu, softmax::Softmax},
     dataset::spiral,
     layer::Dense,
     loss::{Loss, accuracy, categorical_crossentropy::CategoricalCrossentropy},
 };
+#[cfg(all(feature = "std", feature = "rand", feature = "dataset"))]
 use rand::{random, random_range};
 
+#[cfg(all(feature = "std", feature = "rand", feature = "dataset"))]
 fn main() {
     let (x, y) = spiral(100, 3);
     let (x, y) = (
@@ -71,3 +74,6 @@ fn main() {
         }
     }
 }
+
+#[cfg(not(all(feature = "std", feature = "rand", feature = "dataset")))]
+fn main() {}

@@ -1,5 +1,7 @@
+#[cfg(feature = "rand")]
 use core::array;
 
+#[cfg(feature = "rand")]
 use rand::distr::{Distribution, StandardUniform};
 
 #[derive(Debug, Clone)]

@@ -45,11 +45,12 @@ impl<const INPUT: usize, const OUTPUT: usize> Distribution<Dense<INPUT, OUTPUT>>
 
 #[cfg(test)]
 mod tests {
-    use rand::random;
-
-    use crate::{dataset::spiral, float_equal, neuron::Neuron};
-
     use super::Dense;
+    #[cfg(feature = "dataset")]
+    use crate::dataset::spiral;
+    use crate::{float_equal, neuron::Neuron};
+    #[cfg(feature = "rand")]
+    use rand::random;
 
     #[test]
     fn layer_with_sample() {
@@ -127,6 +128,7 @@ mod tests {
         )
     }
 
+    #[cfg(all(feature = "rand", feature = "dataset"))]
     #[test]
     fn layer_with_dataset() {
         let (x, _) = spiral(100, 3);

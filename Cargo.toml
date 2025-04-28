@@ -5,8 +5,9 @@ edition = "2024"
 
 [features]
 default = ["dataset", "rand"]
-dataset = ["dep:rand"]
-rand = ["dep:rand"]
+dataset = ["dep:rand", "std"]
+rand = ["dep:rand", "std"]
+std = []
 
 [dependencies]
 # Requires std

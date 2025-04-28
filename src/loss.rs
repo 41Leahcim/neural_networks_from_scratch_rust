@@ -1,5 +1,6 @@
 use crate::float_equal;
 
+#[cfg(feature = "std")]
 pub mod categorical_crossentropy;
 
 pub trait Loss<const SAMPLE_SIZE: usize, const LABEL_SIZE: usize> {

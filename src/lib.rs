@@ -1,4 +1,4 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 pub mod activation;
 #[cfg(feature = "dataset")]
@@ -11,7 +11,7 @@ const fn float_equal(left: f64, right: f64) -> bool {
     (left - right).abs() < 1e-5
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "dataset", feature = "rand"))]
 mod tests {
     extern crate alloc;
 
