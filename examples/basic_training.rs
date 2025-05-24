@@ -30,7 +30,7 @@ fn main() {
     let mut best_dense1 = dense1.clone();
     let mut best_dense2 = dense2.clone();
 
-    for iteration in 0..10_000 {
+    for iteration in 0..100_000 {
         // Generate a new set of weights for iteration
         dense1.neurons.iter_mut().for_each(|neuron| {
             neuron
@@ -76,4 +76,6 @@ fn main() {
 }
 
 #[cfg(not(all(feature = "std", feature = "rand", feature = "dataset")))]
-fn main() {}
+fn main() {
+    panic!("This example requires all features to be enabled!");
+}
